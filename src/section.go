@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"github.com/golang-collections/collections/stack"
 	. "regexp"
 )
@@ -116,8 +117,8 @@ func (s *Section) findFirstCodeBlock(blockPattern CodeBlockPattern) (Section, er
 	return Section{}, errors.New("no matches found in this section")
 }
 
-/*func main() {
+func main() {
 	re := MustCompile(`ab?`)
 	fmt.Println(re.FindStringIndex("tablett"))
 	fmt.Println(re.FindStringIndex("foo") == nil)
-}*/
+}
