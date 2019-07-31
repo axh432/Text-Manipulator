@@ -25,7 +25,7 @@ func (s *Section) toString() string {
 	return s.source[s.start:s.end]
 }
 
-func (s *Section) find(pattern Regexp) (Section, error) {
+func (s *Section) find(pattern *Regexp) (Section, error) {
 	start := s.start
 	end := s.end
 
@@ -40,7 +40,7 @@ func (s *Section) find(pattern Regexp) (Section, error) {
 	return createSectionFromMatch(match, start, s.source), nil
 }
 
-func (s *Section) findAll(pattern Regexp) (matchingSections []Section) {
+func (s *Section) findAll(pattern *Regexp) (matchingSections []Section) {
 
 	start := s.start
 
@@ -59,7 +59,7 @@ func (s *Section) findAll(pattern Regexp) (matchingSections []Section) {
 	return matchingSections
 }
 
-func (s *Section) findAllStartEndPattern(startPattern Regexp, endPattern Regexp) (matchingSections []Section) {
+func (s *Section) findAllStartEndPattern(startPattern *Regexp, endPattern *Regexp) (matchingSections []Section) {
 
 	startMatches := s.findAll(startPattern)
 
@@ -75,15 +75,15 @@ func (s *Section) findAllStartEndPattern(startPattern Regexp, endPattern Regexp)
 	return
 }
 
-func (s *Section) findAllLinesContaining(pattern Regexp) []Section {
+func (s *Section) findAllLinesContaining(pattern *Regexp) []Section {
 
 	endPattern := MustCompile(`\n`)
-	return s.findAllStartEndPattern(pattern, *endPattern)
+	return s.findAllStartEndPattern(pattern, endPattern)
 
 }
 
-func (s *Section) findFirstCodeBlock(blockPattern CodeBlockPattern) (Section, error) {
-	matches := s.findAll(blockPattern.whole)
+func (s *Section) findFirstCodeBlock(blockPattern *CodeBlockPattern) (Section, error) {
+	matches := s.findAll(&blockPattern.whole)
 	blockStack := stack.New()
 
 	for _, match := range matches {
