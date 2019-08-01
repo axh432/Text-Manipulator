@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"testing"
 	. "regexp"
+	"strings"
+	"testing"
 )
 
 func Test_createSectionFromString(t *testing.T) {
@@ -156,9 +157,11 @@ func Test_find(t *testing.T) {
 
 }
 
-func Test_findWithMultiple(t *testing.T) {
+func Test_findMultiLine(t *testing.T) {
 
-	original := "Geraldrald"
+	original := `something
+					Gerald
+				this way comes`
 
 	section := createSectionFromString(original)
 
@@ -174,16 +177,16 @@ func Test_findWithMultiple(t *testing.T) {
 		fmt.Printf("\tsource matches original string: %s vs %s\n", foundSection.source, original)
 	}
 
-	if foundSection.start != 2 {
-		t.Errorf("\tStart is not correct. got: %v, want: %v", foundSection.start, 2)
+	if foundSection.start != 17 {
+		t.Errorf("\tStart is not correct. got: %v, want: %v", foundSection.start, 17)
 	}else{
-		fmt.Printf("\tstart is correct: %d vs %d\n", foundSection.start, 2)
+		fmt.Printf("\tstart is correct: %d vs %d\n", foundSection.start, 17)
 	}
 
-	if foundSection.end != 6 {
-		t.Errorf("\tEnd is not correct. got: %d, want: %d", foundSection.end, 6)
+	if foundSection.end != 21 {
+		t.Errorf("\tEnd is not correct. got: %d, want: %d", foundSection.end, 21)
 	}else{
-		fmt.Printf("\tend is correct %d vs %d\n", foundSection.end, 6)
+		fmt.Printf("\tend is correct %d vs %d\n", foundSection.end, 21)
 	}
 
 	if foundSection.toString() != "rald" {
@@ -270,3 +273,100 @@ func Test_findAll(t *testing.T) {
 
 }
 
+func Test_findWithMultiple(t *testing.T) {
+
+	original := "Geraldrald"
+
+	section := createSectionFromString(original)
+
+	foundSection, err := section.find(MustCompile(`rald`))
+
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+
+	if foundSection.source != original {
+		t.Errorf("\tsource does not match the original string. got: %v, want: %v", foundSection.source, original)
+	}else{
+		fmt.Printf("\tsource matches original string: %s vs %s\n", foundSection.source, original)
+	}
+
+	if foundSection.start != 2 {
+		t.Errorf("\tStart is not correct. got: %v, want: %v", foundSection.start, 2)
+	}else{
+		fmt.Printf("\tstart is correct: %d vs %d\n", foundSection.start, 2)
+	}
+
+	if foundSection.end != 6 {
+		t.Errorf("\tEnd is not correct. got: %d, want: %d", foundSection.end, 6)
+	}else{
+		fmt.Printf("\tend is correct %d vs %d\n", foundSection.end, 6)
+	}
+
+	if foundSection.toString() != "rald" {
+		t.Errorf("\ttoString() is not correct. got: %s, want: %s", foundSection.toString(), "rald")
+	}else{
+		fmt.Printf("\ttoString() matches substring string: %s vs %s\n", foundSection.toString(), "rald")
+	}
+
+}
+
+func Test_findAllStartEndPattern(t *testing.T) {
+
+	original := `
+
+				Gerald is rad
+				Gerald is great
+				Gerald is life
+				`
+
+	section := createSectionFromString(original)
+
+	foundLines := section.findAllStartEndPattern(MustCompile("Gerald"), MustCompile("\n"))
+
+	for _, foundLine := range foundLines {
+		if foundLine.source != original {
+			t.Errorf("\tsource does not match the original string. got: %v, want: %v", foundLine.source, original)
+		}else{
+			fmt.Println("\tsource matches original string")
+		}
+
+		if strings.Contains("Gerald", foundLine.toString()){
+			t.Errorf("\ttoString() is not correct. got: %s", foundLine.toString())
+		}else{
+			fmt.Printf("\ttoString() has the correct line: %s", foundLine.toString())
+		}
+
+	}
+
+}
+
+func Test_findAllLines(t *testing.T) {
+
+	original := `
+
+				Gerald is rad
+				Gerald is great
+				Gerald is life
+				`
+
+	section := createSectionFromString(original)
+
+	foundLines := section.findAllLinesContaining(MustCompile("Gerald"))
+
+	for _, foundLine := range foundLines {
+		if foundLine.source != original {
+			t.Errorf("\tsource does not match the original string. got: %v, want: %v", foundLine.source, original)
+		}else{
+			fmt.Println("\tsource matches original string")
+		}
+
+		if strings.Contains("Gerald", foundLine.toString()){
+			t.Errorf("\ttoString() is not correct. got: %s", foundLine.toString())
+		}else{
+			fmt.Printf("\ttoString() has the correct line: %s", foundLine.toString())
+		}
+
+	}
+
+}
