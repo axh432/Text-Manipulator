@@ -83,7 +83,7 @@ func (s *Section) findAllLinesContaining(pattern *Regexp) []Section {
 }
 
 func (s *Section) findFirstCodeBlock(blockPattern *CodeBlockPattern) (Section, error) {
-	matches := s.findAll(&blockPattern.whole)
+	matches := s.findAll(blockPattern.whole)
 	blockStack := stack.New()
 
 	for _, match := range matches {

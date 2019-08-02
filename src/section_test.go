@@ -370,3 +370,47 @@ func Test_findAllLines(t *testing.T) {
 	}
 
 }
+
+func Test_findFirstCodeBlock(t *testing.T) {
+
+	original := `
+				//The following is a block of code
+				public static void printNerp(String toBeNerped) {
+					
+					if(toBeNerped.contains("nerp")){
+						System.out.println("Nerp!")
+					}
+
+					System.out.println("Herp!")
+
+				}
+				`
+
+	expected := `{
+					
+					if(toBeNerped.contains("nerp")){
+						System.out.println("Nerp!")
+					}
+
+					System.out.println("Herp!")
+
+				}`
+
+	section := createSectionFromString(original)
+
+	codeBlockPattern := newCodeBlockPattern(MustCompile("[{}]"), MustCompile("{"), MustCompile("}"))
+
+	codeBlock, err := section.findFirstCodeBlock(codeBlockPattern)
+
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+
+	if codeBlock.toString() != expected {
+		t.Errorf(`the code block is incorrect. 
+							Expected: %s
+							Got: %s `, expected, codeBlock.toString())
+	}
+
+	fmt.Printf(codeBlock.toString())
+}

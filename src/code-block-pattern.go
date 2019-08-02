@@ -5,12 +5,12 @@ import (
 )
 
 type CodeBlockPattern struct {
-	whole  Regexp
-	open   Regexp
-	closed Regexp
+	whole  *Regexp
+	open   *Regexp
+	closed *Regexp
 }
 
-func newCodeBlockPattern(whole Regexp, open Regexp, closed Regexp) *CodeBlockPattern{
+func newCodeBlockPattern(whole *Regexp, open *Regexp, closed *Regexp) *CodeBlockPattern{
 	return &CodeBlockPattern{ whole, open, closed }
 }
 
