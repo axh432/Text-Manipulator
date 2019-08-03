@@ -121,6 +121,8 @@ func Test_createSubSectionFromMatch(t *testing.T) {
 
 func Test_find(t *testing.T) {
 
+	fmt.Println("find:")
+
 	original := "Gerald"
 
 	section := createSectionFromString(original)
@@ -158,6 +160,8 @@ func Test_find(t *testing.T) {
 }
 
 func Test_findMultiLine(t *testing.T) {
+
+	fmt.Println("findMultiline:")
 
 	original := `something
 					Gerald
@@ -198,6 +202,8 @@ func Test_findMultiLine(t *testing.T) {
 }
 
 func Test_findWithinSubSection(t *testing.T) {
+
+	fmt.Println("findWithinSubSection:")
 
 	original := "moreGerald"
 
@@ -243,6 +249,8 @@ func Test_findWithinSubSection(t *testing.T) {
 
 func Test_findAll(t *testing.T) {
 
+	fmt.Println("findAll:")
+
 	original := "Geraldralb"
 
 	section := createSectionFromString(original)
@@ -274,6 +282,8 @@ func Test_findAll(t *testing.T) {
 }
 
 func Test_findWithMultiple(t *testing.T) {
+
+	fmt.Println("findWithMultiple:")
 
 	original := "Geraldrald"
 
@@ -313,6 +323,8 @@ func Test_findWithMultiple(t *testing.T) {
 
 func Test_findAllStartEndPattern(t *testing.T) {
 
+	fmt.Println("findAllStartEndPattern:")
+
 	original := `
 
 				Gerald is rad
@@ -341,7 +353,9 @@ func Test_findAllStartEndPattern(t *testing.T) {
 
 }
 
-func Test_findAllLines(t *testing.T) {
+func Test_findLinesContaining(t *testing.T) {
+
+	fmt.Println("findLinesContaining:")
 
 	original := `
 
@@ -352,7 +366,7 @@ func Test_findAllLines(t *testing.T) {
 
 	section := createSectionFromString(original)
 
-	foundLines := section.findAllLinesContaining(MustCompile("Gerald"))
+	foundLines := section.findLinesContaining(MustCompile("Gerald"))
 
 	for _, foundLine := range foundLines {
 		if foundLine.source != original {
@@ -372,6 +386,8 @@ func Test_findAllLines(t *testing.T) {
 }
 
 func Test_findFirstCodeBlock(t *testing.T) {
+
+	fmt.Println("findFirstCodeBlock:")
 
 	original := `
 				//The following is a block of code

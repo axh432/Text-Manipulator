@@ -27,9 +27,8 @@ func (s *Section) toString() string {
 
 func (s *Section) find(pattern *Regexp) (Section, error) {
 	start := s.start
-	end := s.end
 
-	sectionAsString := s.source[start:end]
+	sectionAsString := s.toString()
 
 	match := pattern.FindStringIndex(sectionAsString)
 
@@ -75,7 +74,7 @@ func (s *Section) findAllStartEndPattern(startPattern *Regexp, endPattern *Regex
 	return
 }
 
-func (s *Section) findAllLinesContaining(pattern *Regexp) []Section {
+func (s *Section) findLinesContaining(pattern *Regexp) []Section {
 
 	endPattern := MustCompile(`\n`)
 	return s.findAllStartEndPattern(pattern, endPattern)
