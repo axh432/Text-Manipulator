@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	. "regexp"
-	"strings"
 	"testing"
 )
 
@@ -31,51 +30,44 @@ class CheckEvenOdd
 }
 `
 
-type Keyword struct {}
-type Name struct {}
-type Symbol struct {}
-
-type Package struct {
-	Name string
-	subPackage *Package
+type Token struct {
+	text string
+	tags []string
 }
 
-type ImportStatement struct {
-	ImportKeyWord string
-	Package *Package
-}
 
-func parseImportStatement(begin int, splitStrings []string) (int, ImportStatement){
+//TODO: It would be better to group things into basic groups: keywords, names, symbols. Then look for more identifying features.
 
-	for i := begin; i < len(splitStrings); i++ {
+func tagToken(rawToken string) Token {
 
-		token := splitStrings[i]
+	token := Token{ rawToken, []string{}  }
 
- 		if strings.Contains(token, "."){
-
-		}else if strings.Contains(token, ";"){
-
-		}
-	}
+	tagIfWhitespace(rawToken)
 
 }
 
 func Test_parse(t *testing.T){
 
+	//tokens := []Token{}
+
 	re := MustCompile(`[[:punct:]]|[[:space:]]`)
 
 	splitStrings := splitKeepDelimiter(re, codeReference)
 
-	for i := 0; i < len(splitStrings); i++ {
-
-		token := splitStrings[i]
-
-		if strings.Contains(token, "import"){
-		}
-
+	for _, token := range splitStrings {
+		fmt.Println(token)
 	}
 
+
+	//every line needs to start with importkeyword
+	//every line needs to have a package name followed by the import keyword
+	//every line needs to have a line terminator
+	//every line can optionally have a further accessorDot followed by another package name
+
+	//legalSyntax := "ImportStatement:ImportKeyword,NameRegex,{AccessorDot,NameRegex}*?,LineTerminator"
+
 }
+
 
 func Test_splitKeepDelimiter(t *testing.T){
 
