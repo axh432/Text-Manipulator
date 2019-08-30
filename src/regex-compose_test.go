@@ -31,31 +31,69 @@ class CheckEvenOdd
 `
 
 type Token struct {
-	text string
-	tags []string
+	Text string
+	Tags []string
 }
 
 
 //TODO: It would be better to group things into basic groups: keywords, names, symbols. Then look for more identifying features.
+func tag(regexPattern string, tag string, token *Token){
+	regexExp := MustCompile(regexPattern)
 
-func tagToken(rawToken string) Token {
+	if regexExp.MatchString(token.Text) {
+		token.Tags = append(token.Tags, tag)
+	}
+}
 
-	token := Token{ rawToken, []string{}  }
+func tagForWhitespace(token *Token){
+	tag(`\s+`, "whitespace", token)
+}
 
-	tagIfWhitespace(rawToken)
+func tagForKeyword(token *Token){
+	tag(`import|class|public|static|void|main|if|int|String|new|else`, "keyword", token)
+}
+
+func tagForSymbol(token *Token){
+	tag(`[[:punct:]]`, "symbol", token)
+}
+
+func tagForWord(token *Token){
+	tag(`\w+`, "word", token)
+}
+
+func tagForNumber(token *Token){
+	tag(`\d+`, "number", token)
+}
+
+func tagToken(token *Token){
+
+	tagForWhitespace(token)
+	tagForKeyword(token)
+	tagForSymbol(token)
+	tagForWord(token)
+	tagForNumber(token)
 
 }
 
 func Test_parse(t *testing.T){
 
-	//tokens := []Token{}
+	tokens := []Token{}
 
 	re := MustCompile(`[[:punct:]]|[[:space:]]`)
 
 	splitStrings := splitKeepDelimiter(re, codeReference)
 
-	for _, token := range splitStrings {
-		fmt.Println(token)
+	for _, rawToken := range splitStrings {
+
+		token := Token{ rawToken, []string{}  }
+
+		tagToken(&token)
+
+		tokens = append(tokens, token)
+
+		if len(token.Tags) == 0 {
+			fmt.Printf("text: %s, tags: %v\n", token.Text, token.Tags)
+		}
 	}
 
 
