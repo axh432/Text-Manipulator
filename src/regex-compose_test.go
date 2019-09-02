@@ -35,8 +35,36 @@ type Token struct {
 	Tags []string
 }
 
+type ImportStatement struct {
+	importKeyword string
+	packageNames []string
+	endline string
+}
 
-//TODO: It would be better to group things into basic groups: keywords, names, symbols. Then look for more identifying features.
+
+type Body struct {
+	statements []string
+}
+
+type Parameter struct {
+	typeName string
+	name string
+}
+
+type FunctionDeclaration struct {
+	modifiers []string
+	functionName string
+	parameters []Parameter
+	body Body
+}
+
+type ClassDeclaration struct {
+	classKeyword string
+	className string
+	functionDeclaration FunctionDeclaration
+}
+
+
 func tag(regexPattern string, tag string, token *Token){
 	regexExp := MustCompile(regexPattern)
 
@@ -65,6 +93,10 @@ func tagForNumber(token *Token){
 	tag(`\d+`, "number", token)
 }
 
+func tagForEmptyString(token *Token){
+	tag(`^$`, "empty string", token)
+}
+
 func tagToken(token *Token){
 
 	tagForWhitespace(token)
@@ -72,6 +104,7 @@ func tagToken(token *Token){
 	tagForSymbol(token)
 	tagForWord(token)
 	tagForNumber(token)
+	tagForEmptyString(token)
 
 }
 
@@ -91,18 +124,8 @@ func Test_parse(t *testing.T){
 
 		tokens = append(tokens, token)
 
-		if len(token.Tags) == 0 {
-			fmt.Printf("text: %s, tags: %v\n", token.Text, token.Tags)
-		}
+		fmt.Printf("text: %q, tags: %v\n", token.Text, token.Tags)
 	}
-
-
-	//every line needs to start with importkeyword
-	//every line needs to have a package name followed by the import keyword
-	//every line needs to have a line terminator
-	//every line can optionally have a further accessorDot followed by another package name
-
-	//legalSyntax := "ImportStatement:ImportKeyword,NameRegex,{AccessorDot,NameRegex}*?,LineTerminator"
 
 }
 
