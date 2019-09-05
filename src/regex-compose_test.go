@@ -35,35 +35,6 @@ type Token struct {
 	Tags []string
 }
 
-type ImportStatement struct {
-	importKeyword string
-	packageNames []string
-	endline string
-}
-
-
-type Body struct {
-	statements []string
-}
-
-type Parameter struct {
-	typeName string
-	name string
-}
-
-type FunctionDeclaration struct {
-	modifiers []string
-	functionName string
-	parameters []Parameter
-	body Body
-}
-
-type ClassDeclaration struct {
-	classKeyword string
-	className string
-	functionDeclaration FunctionDeclaration
-}
-
 
 func tag(regexPattern string, tag string, token *Token){
 	regexExp := MustCompile(regexPattern)

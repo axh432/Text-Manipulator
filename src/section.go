@@ -81,6 +81,44 @@ func (s *Section) findLinesContaining(pattern *Regexp) []Section {
 
 }
 
+//a section can exist on a single line or on multiple lines.
+//get the section to fit into a lines format.
+
+func (s *Section) getLines() []Section {
+
+	newLineRegex := MustCompile(`\n`)
+	everythingButNewLineRegex := MustCompile(`[^\n]+`)
+
+	fileUpToSection := Section{ 0, s.start, s.source }
+	fileFromSection := Section{ s.end, len(s.source), s.source }
+
+	newLinesUpToSection := fileUpToSection.findAll(newLineRegex)
+
+	numNewLinesUpToSection := len(newLinesUpToSection)
+
+	var firstNewLine Section
+	var lastNewLine  Section
+	var err			 error
+
+	if numNewLinesUpToSection == 0 {
+		firstNewLine = Section {0, 0, s.source}
+	}else{
+		firstNewLine = newLinesUpToSection[numNewLinesUpToSection-1]
+	}
+
+	lastNewLine, err = fileFromSection.find(newLineRegex)
+
+	//no more new lines in the string. so set to end of string.
+	if err != nil {
+		lastNewLine = Section{ len(s.source), len(s.source), s.source }
+	}
+
+	sectionAsLines := Section{firstNewLine.start, lastNewLine.end, s.source}
+
+	return sectionAsLines.findAll(everythingButNewLineRegex)
+}
+
+
 func (s *Section) findFirstCodeBlock(blockPattern *CodeBlockPattern) (Section, error) {
 	matches := s.findAll(blockPattern.whole)
 	blockStack := stack.New()

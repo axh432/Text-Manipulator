@@ -430,3 +430,47 @@ func Test_findFirstCodeBlock(t *testing.T) {
 
 	fmt.Printf(codeBlock.toString())
 }
+
+func Test_getLines(t *testing.T) {
+	fmt.Println("getLines():")
+
+	original := `
+				//The following is a block of code
+				public static void printNerp(String toBeNerped) {
+					
+					if(toBeNerped.contains("nerp")){
+						System.out.println("Nerp!")
+					}
+
+					System.out.println("Herp!")
+
+				}
+				`
+
+	section := createSectionFromString(original)
+
+	functionHeader, err := section.find(MustCompile(QuoteMeta(`public static void printNerp(String toBeNerped) {`)))
+
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+
+	restOfFile := Section{ functionHeader.start, section.end, section.source }
+
+	codeBlockPattern := newCodeBlockPattern(MustCompile("[{}]"), MustCompile("{"), MustCompile("}"))
+
+	codeBlock, err := restOfFile.findFirstCodeBlock(codeBlockPattern)
+	
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+
+	headerAndCodeBlock := Section{ functionHeader.start, codeBlock.end, section.source }
+
+	lines := headerAndCodeBlock.getLines()
+
+	for index, line := range lines {
+		fmt.Printf("%d: %s\n", index, line.toString())
+	}
+
+}
