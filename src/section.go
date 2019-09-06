@@ -81,24 +81,16 @@ func (s *Section) findLinesContaining(pattern *Regexp) []Section {
 
 }
 
-//a section can exist on a single line or on multiple lines.
-//get the section to fit into a lines format.
-
-func (s *Section) getLines() []Section {
-
+func (s *Section) getFirstNewLine() Section {
 	newLineRegex := MustCompile(`\n`)
-	everythingButNewLineRegex := MustCompile(`[^\n]+`)
 
 	fileUpToSection := Section{ 0, s.start, s.source }
-	fileFromSection := Section{ s.end, len(s.source), s.source }
 
 	newLinesUpToSection := fileUpToSection.findAll(newLineRegex)
 
 	numNewLinesUpToSection := len(newLinesUpToSection)
 
 	var firstNewLine Section
-	var lastNewLine  Section
-	var err			 error
 
 	if numNewLinesUpToSection == 0 {
 		firstNewLine = Section {0, 0, s.source}
@@ -106,12 +98,33 @@ func (s *Section) getLines() []Section {
 		firstNewLine = newLinesUpToSection[numNewLinesUpToSection-1]
 	}
 
+	return firstNewLine
+}
+
+func (s *Section) getLastNewLine() Section {
+	newLineRegex := MustCompile(`\n`)
+
+	fileFromSection := Section{ s.end, len(s.source), s.source }
+
+	var lastNewLine  Section
+	var err error
+
 	lastNewLine, err = fileFromSection.find(newLineRegex)
 
 	//no more new lines in the string. so set to end of string.
 	if err != nil {
 		lastNewLine = Section{ len(s.source), len(s.source), s.source }
 	}
+
+	return lastNewLine
+}
+
+func (s *Section) getLines() []Section {
+
+	everythingButNewLineRegex := MustCompile(`[^\n]+`)
+
+	firstNewLine := s.getFirstNewLine()
+	lastNewLine := s.getLastNewLine()
 
 	sectionAsLines := Section{firstNewLine.start, lastNewLine.end, s.source}
 

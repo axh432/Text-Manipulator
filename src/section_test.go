@@ -7,6 +7,19 @@ import (
 	"testing"
 )
 
+const blockOfText = `
+				//The following is a block of code
+				public static void printNerp(String toBeNerped) {
+
+					if(toBeNerped.contains("nerp")){
+						System.out.println("Nerp!")
+					}
+
+					System.out.println("Herp!")
+
+				}
+				`
+
 func Test_createSectionFromString(t *testing.T) {
 
 	original := "Gerald"
@@ -434,20 +447,7 @@ func Test_findFirstCodeBlock(t *testing.T) {
 func Test_getLines(t *testing.T) {
 	fmt.Println("getLines():")
 
-	original := `
-				//The following is a block of code
-				public static void printNerp(String toBeNerped) {
-					
-					if(toBeNerped.contains("nerp")){
-						System.out.println("Nerp!")
-					}
-
-					System.out.println("Herp!")
-
-				}
-				`
-
-	section := createSectionFromString(original)
+	section := createSectionFromString(blockOfText)
 
 	functionHeader, err := section.find(MustCompile(QuoteMeta(`public static void printNerp(String toBeNerped) {`)))
 
@@ -460,7 +460,7 @@ func Test_getLines(t *testing.T) {
 	codeBlockPattern := newCodeBlockPattern(MustCompile("[{}]"), MustCompile("{"), MustCompile("}"))
 
 	codeBlock, err := restOfFile.findFirstCodeBlock(codeBlockPattern)
-	
+
 	if err != nil {
 		t.Errorf(err.Error())
 	}
@@ -471,6 +471,98 @@ func Test_getLines(t *testing.T) {
 
 	for index, line := range lines {
 		fmt.Printf("%d: %s\n", index, line.toString())
+	}
+
+}
+
+func Test_getLines_one_word(t *testing.T){
+	fmt.Println("getLines():")
+
+	section := createSectionFromString(blockOfText)
+
+	void, err := section.find(MustCompile(QuoteMeta(`void`)))
+
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+
+	lines := void.getLines()
+
+	for index, line := range lines {
+		fmt.Printf("%d: %s\n", index, line.toString())
+	}
+
+
+}
+
+func Test_getLines_no_new_lines_at_end(t *testing.T){
+	fmt.Println("getLines():")
+
+	section := createSectionFromString("\n\nThis is dave")
+
+	void, err := section.find(MustCompile(QuoteMeta(`This is dave`)))
+
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+
+	lines := void.getLines()
+
+	for index, line := range lines {
+		fmt.Printf("%d: %s\n", index, line.toString())
+	}
+
+}
+
+func Test_getLines_no_new_lines_at_start(t *testing.T){
+	fmt.Println("getLines():")
+
+	original := "This is dave\n\n"
+	expected := "This is dave"
+
+	section := createSectionFromString(original)
+
+	void, err := section.find(MustCompile(expected))
+
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+
+	lines := void.getLines()
+
+	for index, line := range lines {
+		fmt.Printf("%d: %s\n", index, line.toString())
+	}
+
+	if lines[0].toString() != expected {
+		t.Errorf("\nExpected: %s\nGot: %s ", expected, lines[0].toString())
+	}
+
+}
+
+func Test_getLines_no_new_lines(t *testing.T){
+	fmt.Println("getLines():")
+
+	original := "This is dave"
+	expected := "This is dave"
+	sectionToFind := "dave"
+
+	section := createSectionFromString(original)
+
+	void, err := section.find(MustCompile(QuoteMeta(sectionToFind)))
+
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+
+	lines := void.getLines()
+
+	for index, line := range lines {
+		fmt.Printf("%d: %s\n", index, line.toString())
+	}
+
+	if lines[0].toString() != expected {
+		t.Errorf("\nExpected: %s\nGot: %s ", expected, lines[0].toString())
 	}
 
 }

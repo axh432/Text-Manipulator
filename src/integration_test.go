@@ -29,45 +29,6 @@ pipeline {
 }
 `
 
-func Test_findAndModifySection(t *testing.T){
-
-	fileAsSection := createSectionFromString(codeSection)
-
-	fmt.Println(fileAsSection.toString())
-
-	exampleBuild, err := fileAsSection.find(MustCompile(`Example Build`))
-
-	if err != nil {
-		t.Errorf(err.Error())
-		return
-	}
-
-	fmt.Println(exampleBuild.toString())
-
-	restOfFile := Section{ exampleBuild.start, fileAsSection.end, fileAsSection.source }
-
-	fmt.Println(restOfFile.toString())
-
-	codeBlockPattern := newCodeBlockPattern(MustCompile("[{}]"), MustCompile("{"), MustCompile("}"))
-
-	codeBlock, err := restOfFile.findFirstCodeBlock(codeBlockPattern)
-
-	fmt.Println(codeBlock.toString())
-
-	lineMatches := codeBlock.findLinesContaining(MustCompile(`sh 'mvn`))
-
-	for _, line := range lineMatches {
-
-		if !Contains(line.toString(),`sh 'mvn --version'`) {
-			t.Errorf(`expected: sh 'mvn --version', got: %s`, line.toString())
-		}else{
-			fmt.Println(line.toString())
-		}
-
-	}
-
-}
-
 func Test_findSectionWithinGroovyFile(t *testing.T){
 
 	fileAsSection := createSectionFromString(codeSection)
@@ -95,6 +56,39 @@ func Test_findSectionWithinGroovyFile(t *testing.T){
 
 	lineMatches := codeBlock.findLinesContaining(MustCompile(`sh 'mvn`))
 	
+	for _, line := range lineMatches {
+
+		if !Contains(line.toString(),`sh 'mvn --version'`) {
+			t.Errorf(`expected: sh 'mvn --version', got: %s`, line.toString())
+		}else{
+			fmt.Println(line.toString())
+		}
+
+	}
+
+}
+
+func Test_findAndModifySection(t *testing.T){
+
+	fileAsSection := createSectionFromString(codeSection)
+
+	exampleBuild, err := fileAsSection.find(MustCompile(QuoteMeta(`stage('Example Build') {`)))
+
+	if err != nil {
+		t.Errorf(err.Error())
+		return
+	}
+
+	restOfFile := Section{ exampleBuild.start, fileAsSection.end, fileAsSection.source }
+
+	codeBlockPattern := newCodeBlockPattern(MustCompile("[{}]"), MustCompile("{"), MustCompile("}"))
+
+	codeBlock, err := restOfFile.findFirstCodeBlock(codeBlockPattern)
+
+	fmt.Println(codeBlock.toString())
+
+	lineMatches := codeBlock.findLinesContaining(MustCompile(`sh 'mvn`))
+
 	for _, line := range lineMatches {
 
 		if !Contains(line.toString(),`sh 'mvn --version'`) {
