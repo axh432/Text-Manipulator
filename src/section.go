@@ -76,8 +76,14 @@ func (s *Section) findAllStartEndPattern(startPattern *Regexp, endPattern *Regex
 
 func (s *Section) findLinesContaining(pattern *Regexp) []Section {
 
-	endPattern := MustCompile(`\n`)
-	return s.findAllStartEndPattern(pattern, endPattern)
+	lines := []Section{}
+	matches := s.findAll(pattern)
+
+	for _, match := range matches {
+		lines = append(lines, match.getLines()...)
+	}
+
+	return lines
 
 }
 
