@@ -6,7 +6,7 @@ import (
 )
 
 type Edit struct {
-	section *Section
+	section Section
 	replace string
 }
 
@@ -19,37 +19,44 @@ func (eq *EditQueue) Add(edit Edit) {
 	eq.Edits = append(eq.Edits, edit)
 
 	sort.Slice(eq.Edits, func(i, j int) bool {
-		return eq.Edits[i].section.start > eq.Edits[j].section.start
+		return eq.Edits[i].section.start < eq.Edits[j].section.start
 	})
+}
+
+func isFirstEdit(index int) bool {
+	return index == 0
 }
 
 func (eq *EditQueue) ApplyEdits() string {
 
 	var sb strings.Builder
 
-	for index, edit := range eq.Edits {
+	for index, currentEdit := range eq.Edits {
 
-		if(index == 0){
-			if(edit.section.start > 0){
-				sb.WriteString(edit.section.source[0:edit.section.start-1])
-				sb.WriteString(edit.replace)
-			}
-		} else {
+		//fill in the gap between previous and current segment
+		var gapStart int
 
-			previousEdit := eq.Edits[index - 1]
-			gapBetweenSections := edit.section.start - previousEdit.section.end
-
-			if(gapBetweenSections > 0){
-				source := edit.section.source
-				gapBegin := previousEdit.section.end + 1
-				gapEnd := edit.section.start -1
-
-				sb.WriteString(source[gapBegin:gapEnd])
-			}
-
-			sb.WriteString(previousEdit.replace)
+		if index == 0 {
+			gapStart = 0
+		}else{
+			previousEdit := eq.Edits[index -1]
+			gapStart = previousEdit.section.end + 1
 		}
 
+		if gapStart != currentEdit.section.start {
+			sb.WriteString(currentEdit.section.source[gapStart:currentEdit.section.start-1])
+		}
+
+		//write the current segment
+		sb.WriteString(currentEdit.replace)
+
+	}
+
+	lastEdit := eq.Edits[len(eq.Edits)-1]
+	sourceEnd := len(lastEdit.section.source)
+
+	if lastEdit.section.end < sourceEnd {
+		sb.WriteString(lastEdit.section.source[lastEdit.section.end + 1:sourceEnd])
 	}
 
 	return sb.String()

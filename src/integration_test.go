@@ -7,8 +7,7 @@ import (
 	."strings"
 )
 
-var codeSection string = `
-pipeline {
+var codeSection string = `pipeline {
     agent none 
     stages {
         stage('Example Build') {
@@ -26,8 +25,7 @@ pipeline {
             }
         }
     }
-}
-`
+}`
 
 func Test_findSectionWithinGroovyFile(t *testing.T){
 
@@ -89,14 +87,50 @@ func Test_findAndModifySection(t *testing.T){
 
 	lineMatches := codeBlock.findLinesContaining(MustCompile(`sh 'mvn`))
 
-	for _, line := range lineMatches {
+	edit := Edit{ lineMatches[0], "Well you can just go and get the hell on\n" }
 
-		if !Contains(line.toString(),`sh 'mvn --version'`) {
-			t.Errorf(`expected: sh 'mvn --version', got: %s`, line.toString())
-		}else{
-			fmt.Println(line.toString())
-		}
+	editQueue := EditQueue{}
 
-	}
+	editQueue.Add(edit)
 
+	fmt.Printf("%s\n", editQueue.ApplyEdits())
+
+}
+
+//this edit is both the last and the start
+func Test_findAndModifySection_replace_start(t *testing.T){
+
+	edit := Edit{ section: Section{ 0, 0, codeSection }, replace:"This should remove" }
+
+	editQueue := EditQueue{}
+
+	editQueue.Add(edit)
+
+	fmt.Printf("\n%s\n", editQueue.ApplyEdits())
+
+}
+
+func Test_findAndModifySection_replace_end(t *testing.T){
+
+	edit := Edit{ section: Section{ len(codeSection), len(codeSection), codeSection }, replace:"This should remove" }
+
+	editQueue := EditQueue{}
+
+	editQueue.Add(edit)
+
+	fmt.Printf("\n%s\n", editQueue.ApplyEdits())
+
+}
+
+func Test_findAndModifySection_multiple_replace(t *testing.T){
+	edit := Edit{ section: Section{ 0, 0, codeSection }, replace:"This should remove" }
+
+	edit2 := Edit{ section: Section{ len(codeSection), len(codeSection), codeSection }, replace:"This should remove" }
+
+	editQueue := EditQueue{}
+
+	editQueue.Add(edit)
+	editQueue.Add(edit2)
+
+	fmt.Printf("\n%s\n", editQueue.ApplyEdits())
 }
