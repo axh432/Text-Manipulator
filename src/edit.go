@@ -23,10 +23,6 @@ func (eq *EditQueue) Add(edit Edit) {
 	})
 }
 
-func isFirstEdit(index int) bool {
-	return index == 0
-}
-
 func (eq *EditQueue) ApplyEdits() string {
 
 	var sb strings.Builder

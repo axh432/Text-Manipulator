@@ -432,7 +432,7 @@ func Test_findFirstCodeBlock(t *testing.T) {
 
 	section := createSectionFromString(original)
 
-	codeBlockPattern := newCodeBlockPattern(MustCompile("[{}]"), MustCompile("{"), MustCompile("}"))
+	codeBlockPattern := newOpenClosedPatternRegex(MustCompile("[{}]"), MustCompile("{"), MustCompile("}"))
 
 	codeBlock := section.findFirstCodeBlock(codeBlockPattern)
 
@@ -463,7 +463,7 @@ func Test_getLines(t *testing.T) {
 	}
 	restOfFile := Section{ functionHeader.start, section.end, section.source }
 
-	codeBlockPattern := newCodeBlockPattern(MustCompile("[{}]"), MustCompile("{"), MustCompile("}"))
+	codeBlockPattern := newOpenClosedPatternRegex(MustCompile("[{}]"), MustCompile("{"), MustCompile("}"))
 
 	codeBlock := restOfFile.findFirstCodeBlock(codeBlockPattern)
 

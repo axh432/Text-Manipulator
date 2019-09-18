@@ -47,7 +47,7 @@ func Test_findSectionWithinGroovyFile(t *testing.T){
  
 	fmt.Println(restOfFile.toString())
 	
-	codeBlockPattern := newCodeBlockPattern(MustCompile("[{}]"), MustCompile("{"), MustCompile("}"))
+	codeBlockPattern := newOpenClosedPatternRegex(MustCompile("[{}]"), MustCompile("{"), MustCompile("}"))
 
 	codeBlock := restOfFile.findFirstCodeBlock(codeBlockPattern)
 
@@ -83,7 +83,7 @@ func Test_findAndModifySection(t *testing.T){
 
 	restOfFile := Section{ exampleBuild.start, fileAsSection.end, fileAsSection.source }
 
-	codeBlockPattern := newCodeBlockPattern(MustCompile("[{}]"), MustCompile("{"), MustCompile("}"))
+	codeBlockPattern := newOpenClosedPatternRegex(MustCompile("[{}]"), MustCompile("{"), MustCompile("}"))
 
 	codeBlock := restOfFile.findFirstCodeBlock(codeBlockPattern)
 
@@ -231,7 +231,7 @@ func fitToLines(section Section) Section {
 }
 
 func getBodyOfCodeBlock(section Section) Section {
-	codeBlockPattern := newCodeBlockPattern(MustCompile("[{}]"), MustCompile("{"), MustCompile("}"))
+	codeBlockPattern := newOpenClosedPatternRegex(MustCompile("[{}]"), MustCompile("{"), MustCompile("}"))
 
 	codeBlock := section.findFirstCodeBlock(codeBlockPattern)
 
@@ -256,7 +256,7 @@ func findHeaderAndCodeBlock(headerToFind string, section Section) Section {
 func getHeaderAndCodeBlock(header Section) Section {
 	restOfFile := Section{ header.start, len(header.source), header.source }
 
-	codeBlockPattern := newCodeBlockPattern(MustCompile("[{}]"), MustCompile("{"), MustCompile("}"))
+	codeBlockPattern := newOpenClosedPatternRegex(MustCompile("[{}]"), MustCompile("{"), MustCompile("}"))
 
 	codeBlock := restOfFile.findFirstCodeBlock(codeBlockPattern)
 

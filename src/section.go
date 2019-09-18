@@ -142,7 +142,7 @@ func (s *Section) getLines() []Section {
 }
 
 
-func (s *Section) findFirstCodeBlock(blockPattern *CodeBlockPattern) Section {
+func (s *Section) findFirstCodeBlock(blockPattern *OpenClosedPattern) Section {
 	matches := s.findAll(blockPattern.whole)
 	blockStack := stack.New()
 
