@@ -40,11 +40,11 @@ func (eq *EditQueue) ApplyEdits() string {
 			gapStart = 0
 		}else{
 			previousEdit := eq.Edits[index -1]
-			gapStart = previousEdit.section.end + 1
+			gapStart = previousEdit.section.end //you can take the previous section end as a start and it wont be repeated.
 		}
 
 		if gapStart != currentEdit.section.start {
-			sb.WriteString(currentEdit.section.source[gapStart:currentEdit.section.start-1])
+			sb.WriteString(currentEdit.section.source[gapStart:currentEdit.section.start])
 		}
 
 		//write the current segment
@@ -56,7 +56,7 @@ func (eq *EditQueue) ApplyEdits() string {
 	sourceEnd := len(lastEdit.section.source)
 
 	if lastEdit.section.end < sourceEnd {
-		sb.WriteString(lastEdit.section.source[lastEdit.section.end + 1:sourceEnd])
+		sb.WriteString(lastEdit.section.source[lastEdit.section.end:sourceEnd])
 	}
 
 	return sb.String()

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"github.com/golang-collections/collections/stack"
 	. "regexp"
@@ -21,11 +20,19 @@ func createSectionFromMatch(match []int, offset int, source string) Section {
 	return Section{offset + match[0], offset + match[1], source}
 }
 
+func (s *Section) isEmpty() bool {
+	if s.start == 0 && s.end == 0 && len(s.source) == 0 {
+		return true
+	}
+
+	return false
+}
+
 func (s *Section) toString() string {
 	return s.source[s.start:s.end]
 }
 
-func (s *Section) find(pattern *Regexp) (Section, error) {
+func (s *Section) find(pattern *Regexp) Section {
 	start := s.start
 
 	sectionAsString := s.toString()
@@ -33,10 +40,10 @@ func (s *Section) find(pattern *Regexp) (Section, error) {
 	match := pattern.FindStringIndex(sectionAsString)
 
 	if match == nil {
-		return Section{}, errors.New("no matches found in this section")
+		return Section{}
 	}
 
-	return createSectionFromMatch(match, start, s.source), nil
+	return createSectionFromMatch(match, start, s.source)
 }
 
 func (s *Section) findAll(pattern *Regexp) (matchingSections []Section) {
@@ -65,9 +72,9 @@ func (s *Section) findAllStartEndPattern(startPattern *Regexp, endPattern *Regex
 	for _, startMatch := range startMatches {
 		restOfSection := Section{startMatch.start, s.end, s.source}
 
-		endMatch, err := restOfSection.find(endPattern)
+		endMatch := restOfSection.find(endPattern)
 
-		if err == nil {
+		if endMatch.isEmpty() {
 			matchingSections = append(matchingSections, Section{startMatch.start, endMatch.end, startMatch.source})
 		}
 	}
@@ -112,13 +119,10 @@ func (s *Section) getLastNewLine() Section {
 
 	fileFromSection := Section{ s.end, len(s.source), s.source }
 
-	var lastNewLine  Section
-	var err error
-
-	lastNewLine, err = fileFromSection.find(newLineRegex)
+	lastNewLine := fileFromSection.find(newLineRegex)
 
 	//no more new lines in the string. so set to end of string.
-	if err != nil {
+	if lastNewLine.isEmpty() {
 		lastNewLine = Section{ len(s.source), len(s.source), s.source }
 	}
 
@@ -138,7 +142,7 @@ func (s *Section) getLines() []Section {
 }
 
 
-func (s *Section) findFirstCodeBlock(blockPattern *CodeBlockPattern) (Section, error) {
+func (s *Section) findFirstCodeBlock(blockPattern *CodeBlockPattern) Section {
 	matches := s.findAll(blockPattern.whole)
 	blockStack := stack.New()
 
@@ -161,7 +165,7 @@ func (s *Section) findFirstCodeBlock(blockPattern *CodeBlockPattern) (Section, e
 
 				startMatch, ok := pop.(Section)
 				if ok {
-					return Section{startMatch.start, match.end, startMatch.source}, nil
+					return Section{startMatch.start, match.end, startMatch.source}
 				}
 
 			}
@@ -170,11 +174,19 @@ func (s *Section) findFirstCodeBlock(blockPattern *CodeBlockPattern) (Section, e
 
 	}
 
-	return Section{}, errors.New("no matches found in this section")
+	return Section{}
 }
 
 func main() {
-	re := MustCompile(`ab?`)
-	fmt.Println(re.FindStringIndex("tablett"))
-	fmt.Println(re.FindStringIndex("foo") == nil)
+	myString := "ThisWillBeMyFinestWork"
+
+	re := MustCompile(`This`)
+	re2 := MustCompile(`Will`)
+	re3 := MustCompile(`Work`)
+
+	fmt.Println(re.FindStringIndex(myString))
+	fmt.Println(re2.FindStringIndex(myString))
+	fmt.Println(re3.FindStringIndex(myString))
+
+	fmt.Println(myString[8:18])
 }

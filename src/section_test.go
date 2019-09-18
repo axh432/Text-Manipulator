@@ -140,10 +140,11 @@ func Test_find(t *testing.T) {
 
 	section := createSectionFromString(original)
 
-	foundSection, err := section.find(MustCompile(`rald`))
+	foundSection := section.find(MustCompile(`rald`))
 
-	if err != nil {
-		t.Errorf(err.Error())
+	if foundSection.isEmpty() {
+		t.Errorf("Section could not be found. Did you forget to QuoteMeta?")
+		return
 	}
 
 	if foundSection.source != original {
@@ -182,10 +183,11 @@ func Test_findMultiLine(t *testing.T) {
 
 	section := createSectionFromString(original)
 
-	foundSection, err := section.find(MustCompile(`rald`))
+	foundSection := section.find(MustCompile(`rald`))
 
-	if err != nil {
-		t.Errorf(err.Error())
+	if foundSection.isEmpty() {
+		t.Errorf("Section could not be found. Did you forget to QuoteMeta?")
+		return
 	}
 
 	if foundSection.source != original {
@@ -222,16 +224,18 @@ func Test_findWithinSubSection(t *testing.T) {
 
 	section := createSectionFromString(original)
 
-	foundSection, err := section.find(MustCompile(`Gerald`))
+	foundSection := section.find(MustCompile(`Gerald`))
 
-	if err != nil {
-		t.Errorf(err.Error())
+	if foundSection.isEmpty() {
+		t.Errorf("Section could not be found. Did you forget to QuoteMeta?")
+		return
 	}
 
-	foundSubSection, subErr := foundSection.find(MustCompile(`rald`))
+	foundSubSection := foundSection.find(MustCompile(`rald`))
 
-	if subErr != nil {
-		t.Errorf(subErr.Error())
+	if foundSubSection.isEmpty() {
+		t.Errorf("Subsection could not be found. Did you forget to QuoteMeta?")
+		return
 	}
 
 	if foundSubSection.source != original {
@@ -302,10 +306,11 @@ func Test_findWithMultiple(t *testing.T) {
 
 	section := createSectionFromString(original)
 
-	foundSection, err := section.find(MustCompile(`rald`))
+	foundSection := section.find(MustCompile(`rald`))
 
-	if err != nil {
-		t.Errorf(err.Error())
+	if foundSection.isEmpty() {
+		t.Errorf("Section could not be found. Did you forget to QuoteMeta?")
+		return
 	}
 
 	if foundSection.source != original {
@@ -429,10 +434,11 @@ func Test_findFirstCodeBlock(t *testing.T) {
 
 	codeBlockPattern := newCodeBlockPattern(MustCompile("[{}]"), MustCompile("{"), MustCompile("}"))
 
-	codeBlock, err := section.findFirstCodeBlock(codeBlockPattern)
+	codeBlock := section.findFirstCodeBlock(codeBlockPattern)
 
-	if err != nil {
-		t.Errorf(err.Error())
+	if codeBlock.isEmpty() {
+		t.Errorf("Code block could not be found. Did you forget to QuoteMeta?")
+		return
 	}
 
 	if codeBlock.toString() != expected {
@@ -449,20 +455,21 @@ func Test_getLines(t *testing.T) {
 
 	section := createSectionFromString(blockOfText)
 
-	functionHeader, err := section.find(MustCompile(QuoteMeta(`public static void printNerp(String toBeNerped) {`)))
+	functionHeader := section.find(MustCompile(QuoteMeta(`public static void printNerp(String toBeNerped) {`)))
 
-	if err != nil {
-		t.Errorf(err.Error())
+	if functionHeader.isEmpty() {
+		t.Errorf("Function Header could not be found. Did you forget to QuoteMeta?")
+		return
 	}
-
 	restOfFile := Section{ functionHeader.start, section.end, section.source }
 
 	codeBlockPattern := newCodeBlockPattern(MustCompile("[{}]"), MustCompile("{"), MustCompile("}"))
 
-	codeBlock, err := restOfFile.findFirstCodeBlock(codeBlockPattern)
+	codeBlock := restOfFile.findFirstCodeBlock(codeBlockPattern)
 
-	if err != nil {
-		t.Errorf(err.Error())
+	if codeBlock.isEmpty() {
+		t.Errorf("Code Block could not be found. Did you forget to QuoteMeta?")
+		return
 	}
 
 	headerAndCodeBlock := Section{ functionHeader.start, codeBlock.end, section.source }
@@ -480,10 +487,11 @@ func Test_getLines_one_word(t *testing.T){
 
 	section := createSectionFromString(blockOfText)
 
-	void, err := section.find(MustCompile(QuoteMeta(`void`)))
+	void := section.find(MustCompile(QuoteMeta(`void`)))
 
-	if err != nil {
-		t.Errorf(err.Error())
+	if void.isEmpty() {
+		t.Errorf("Void could not be found. Did you forget to QuoteMeta?")
+		return
 	}
 
 	lines := void.getLines()
@@ -500,10 +508,11 @@ func Test_getLines_no_new_lines_at_end(t *testing.T){
 
 	section := createSectionFromString("\n\nThis is dave")
 
-	void, err := section.find(MustCompile(QuoteMeta(`This is dave`)))
+	void := section.find(MustCompile(QuoteMeta(`This is dave`)))
 
-	if err != nil {
-		t.Errorf(err.Error())
+	if void.isEmpty() {
+		t.Errorf("Void could not be found. Did you forget to QuoteMeta?")
+		return
 	}
 
 	lines := void.getLines()
@@ -522,10 +531,11 @@ func Test_getLines_no_new_lines_at_start(t *testing.T){
 
 	section := createSectionFromString(original)
 
-	void, err := section.find(MustCompile(expected))
+	void := section.find(MustCompile(expected))
 
-	if err != nil {
-		t.Errorf(err.Error())
+	if void.isEmpty() {
+		t.Errorf("Section could not be found. Did you forget to QuoteMeta?")
+		return
 	}
 
 	lines := void.getLines()
@@ -549,10 +559,11 @@ func Test_getLines_no_new_lines(t *testing.T){
 
 	section := createSectionFromString(original)
 
-	void, err := section.find(MustCompile(QuoteMeta(sectionToFind)))
+	void := section.find(MustCompile(QuoteMeta(sectionToFind)))
 
-	if err != nil {
-		t.Errorf(err.Error())
+	if void.isEmpty() {
+		t.Errorf("Void could not be found. Did you forget to QuoteMeta?")
+		return
 	}
 
 	lines := void.getLines()
@@ -563,6 +574,20 @@ func Test_getLines_no_new_lines(t *testing.T){
 
 	if lines[0].toString() != expected {
 		t.Errorf("\nExpected: %s\nGot: %s ", expected, lines[0].toString())
+	}
+
+}
+
+func Test_isEmpty(t *testing.T){
+	section := Section{}
+	notEmpty := Section{1, 2, "This"}
+
+	if !section.isEmpty() {
+		t.Errorf("\nExpected 'section' to be empty\n")
+	}
+
+	if notEmpty.isEmpty() {
+		t.Errorf("\nDid not expect 'notEmpty' section to be empty\n")
 	}
 
 }

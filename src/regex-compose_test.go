@@ -118,7 +118,7 @@ func Test_findStringIndex(t *testing.T){
 
 	fileAsSection := createSectionFromString(codeSection)
 
-	exampleBuild, err := fileAsSection.find(MustCompile(QuoteMeta(`        stage('Example Build') {
+	exampleBuild := fileAsSection.find(MustCompile(QuoteMeta(`        stage('Example Build') {
             agent { docker 'maven:3-alpine' } 
             steps {
                 echo 'Hello, Maven'
@@ -127,8 +127,8 @@ func Test_findStringIndex(t *testing.T){
         }`)))
 
 
-	if err != nil {
-		t.Errorf(err.Error())
+	if exampleBuild.isEmpty() {
+		t.Errorf("Example build could not be found. Did you forget to QuoteMeta?")
 		return
 	}
 
