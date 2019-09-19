@@ -1,6 +1,8 @@
 package main
 
 import (
+	"errors"
+	"fmt"
 	. "regexp"
 	"strings"
 	"testing"
@@ -31,19 +33,6 @@ var exampleJenkins string = `pipeline {
 //matched single pattern with mitigation
 
 
-type Composition struct {
-	first interface{}
-	second interface{}
-}
-
-type Or struct {
-	first interface{}
-	second interface{}
-}
-
-
-
-
 var Line = MatchedSinglePattern{ MustCompile("\n"), []string{} }
 
 var DoubleQuoteString = MatchedSinglePattern{ MustCompile(`"`), []string{ `\"` } }
@@ -54,7 +43,7 @@ var CurlyCodeBlock = newOpenClosedPatternString("{", "}" )
 
 var ParenthesesCodeBlock = newOpenClosedPatternString( "(", ")" )
 
-var Word = MustCompile(`\w`)
+var Word = SinglePattern { MustCompile(`\w`) }
 
 var ParenthesesCodeBlockWithHeader = Composition{ Word, ParenthesesCodeBlock }
 
@@ -62,7 +51,7 @@ var CurlyHeader = Or { Word, ParenthesesCodeBlockWithHeader }
 
 var CurlyCodeBlockWithHeader = Composition{ CurlyHeader, CurlyCodeBlock }
 
-var grammar = map[string] interface{}{
+var grammar = map[string] GrammaticalExpression {
 	"Line" : Line,
 	"DoubleQuoteString" : DoubleQuoteString,
 	"SingleQuoteString" : SingleQuoteString,
@@ -82,7 +71,7 @@ func Test_parsePath(t *testing.T) {
 
 }
 
-func runQuery(query string, section Section) []Section {
+func runQuery(query string, section Section) ([]Section, error) {
 
 	commands := strings.Split(query, "/")
 
@@ -90,61 +79,68 @@ func runQuery(query string, section Section) []Section {
 
 }
 
-func executeCommands(commands []string, index int, section Section) []Section {
+func executeCommands(commands []string, index int, section Section) ([]Section, error) {
+
+	var grammaticalExpName string
+	var searchString string
+	var sectionsToReturn []Section
+	var sectionsFromGrammaticalExp []Section
+
 
 	command := commands[index]
-	var something interface{}
-	var stringToSearch string
 
-	if strings.Contains(command, "[") {
+	if !strings.Contains(command, "[") {
+		return []Section{}, errors.New("given command does not contain [] with a search query, " + command)
+	}
 
-		commandAndSearchStr := strings.Split(command, "[")
-		commandAndSearchStr[1] = strings.Replace(commandAndSearchStr[1], "]", "", 1)
+	grammaticalExpAndSearchStr := strings.Split(command, "[")
 
-		something = grammar[commandAndSearchStr[0]]
-		stringToSearch = commandAndSearchStr[1]
+	grammaticalExpName = grammaticalExpAndSearchStr[0]
+	searchString = strings.Replace(grammaticalExpAndSearchStr[1], "]", "", 1)
+
+	grammaticalExp := grammar[grammaticalExpName]
+
+	switch grammaticalExp.GetType() {
+
+		case "Composition":
+			composition, ok := grammaticalExp.(Composition)
+
+			if !ok {
+				return []Section{}, errors.New("Composition GrammaticalExpression could not be casted to Composition")
+			}
+			sectionsFromGrammaticalExp = executeCompositionExpression(composition, searchString)
+
+		case "Or":
+			fmt.Println("Linux.")
+		case "SinglePattern":
+			fmt.Println("Linux.")
+		case "MatchedSinglePattern":
+			fmt.Println("OS X.")
+		case "OpenClosedPattern":
+			fmt.Println("Linux.")
+		default:
 
 	}
 
-	somethingAsSinglePattern 		:= castToMatchedSinglePattern(something)
-	somethingAsOpenClosedPattern 	:= castToOpenClosedPattern(something)
-	somethingAsOr 					:= castToOr(something)
-	somethingAsComposition 			:= castToComposition(something)
-
-	if somethingAsSinglePattern != nil {
-
+	if index == len(commands)-1 {
+		return sectionsFromGrammaticalExp, nil
 	}
 
+	for _, sectionFromGrammaticalExp := range sectionsFromGrammaticalExp {
+
+		sectionsFromNextCommand, err := executeCommands(commands, index + 1, sectionFromGrammaticalExp)
+
+		if err != nil {
+			return []Section{}, err
+		}
+
+		sectionsToReturn = append(sectionsToReturn, sectionsFromNextCommand...)
+	}
+
+	return sectionsToReturn, nil
 }
 
-func castToComposition(object interface{}) Composition {
-	var composition Composition
-
-	composition, _ = object.(Composition)
-
-	return composition
+func executeCompositionExpression(comp Composition, query string) []Section {
+	return []Section{}
 }
 
-func castToOr(object interface{}) Or {
-	var or Or
-
-	or, _ = object.(Or)
-
-	return or
-}
-
-func castToMatchedSinglePattern(object interface{}) MatchedSinglePattern {
-	var matchedSinglePattern MatchedSinglePattern
-
-	matchedSinglePattern, _ = object.(MatchedSinglePattern)
-
-	return matchedSinglePattern
-}
-
-func castToOpenClosedPattern(object interface{}) OpenClosedPattern {
-	var openClosedPattern OpenClosedPattern
-
-	openClosedPattern, _ = object.(OpenClosedPattern)
-
-	return openClosedPattern
-}

@@ -30,3 +30,7 @@ func (codeBlockPattern *OpenClosedPattern) isOpen(symbol string) bool {
 func (codeBlockPattern *OpenClosedPattern) isClosed(symbol string) bool {
 	return codeBlockPattern.closed.MatchString(symbol)
 }
+
+func (c OpenClosedPattern) GetType() string {
+	return "OpenClosedPattern"
+}

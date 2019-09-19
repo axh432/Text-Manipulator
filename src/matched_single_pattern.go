@@ -7,4 +7,7 @@ type MatchedSinglePattern struct {
 	MitigatingSymbols []string
 }
 
+func (m MatchedSinglePattern) GetType() string {
+	return "MatchedSinglePattern"
+}
 
