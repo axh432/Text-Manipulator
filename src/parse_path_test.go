@@ -85,6 +85,7 @@ func executeCommands(commands []string, index int, section Section) ([]Section, 
 	var searchString string
 	var sectionsToReturn []Section
 	var sectionsFromGrammaticalExp []Section
+	var err error
 
 
 	command := commands[index]
@@ -100,26 +101,10 @@ func executeCommands(commands []string, index int, section Section) ([]Section, 
 
 	grammaticalExp := grammar[grammaticalExpName]
 
-	switch grammaticalExp.GetType() {
+	sectionsFromGrammaticalExp, err = executeGramaticalExpression(grammaticalExp, searchString, section)
 
-		case "Composition":
-			composition, ok := grammaticalExp.(Composition)
-
-			if !ok {
-				return []Section{}, errors.New("Composition GrammaticalExpression could not be casted to Composition")
-			}
-			sectionsFromGrammaticalExp = executeCompositionExpression(composition, searchString)
-
-		case "Or":
-			fmt.Println("Linux.")
-		case "SinglePattern":
-			fmt.Println("Linux.")
-		case "MatchedSinglePattern":
-			fmt.Println("OS X.")
-		case "OpenClosedPattern":
-			fmt.Println("Linux.")
-		default:
-
+	if err != nil {
+		return []Section{}, err
 	}
 
 	if index == len(commands)-1 {
@@ -140,7 +125,36 @@ func executeCommands(commands []string, index int, section Section) ([]Section, 
 	return sectionsToReturn, nil
 }
 
-func executeCompositionExpression(comp Composition, query string) []Section {
+func executeGramaticalExpression(grammaticalExp GrammaticalExpression, searchString string, section Section) ([]Section, error) {
+
+	var sectionsFromGrammaticalExp []Section
+
+	switch grammaticalExp.GetType() {
+
+	case "Composition":
+		composition, ok := grammaticalExp.(Composition)
+
+		if !ok {
+			return []Section{}, errors.New("Composition GrammaticalExpression could not be casted to Composition")
+		}
+		sectionsFromGrammaticalExp = executeCompositionExpression(composition, searchString, section)
+
+	case "Or":
+		fmt.Println("Or.")
+	case "SinglePattern":
+		fmt.Println("SinglePattern")
+	case "MatchedSinglePattern":
+		fmt.Println("MatchedSinglePattern")
+	case "OpenClosedPattern":
+		fmt.Println("OpenClosedPattern")
+	default:
+
+	}
+
+	return sectionsFromGrammaticalExp, nil
+}
+
+func executeCompositionExpression(comp Composition, query string, section Section) []Section {
 	return []Section{}
 }
 
