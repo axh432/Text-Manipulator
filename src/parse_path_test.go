@@ -81,66 +81,94 @@ func runQuery(query string, section Section) ([]Section, error) {
 
 func executeCommands(commands []string, index int, section Section) ([]Section, error) {
 
-	var grammaticalExpName string
-	var searchString string
-	var sectionsToReturn []Section
-	var sectionsFromGrammaticalExp []Section
+	var sectionsFromExpression []Section
 	var err error
-
 
 	command := commands[index]
 
-	if !strings.Contains(command, "[") {
-		return []Section{}, errors.New("given command does not contain [] with a search query, " + command)
+	grammaticalExp, searchQuery, interpretErr := interpretCommand(command)
+
+	if interpretErr != nil {
+		return []Section{}, interpretErr
 	}
 
-	grammaticalExpAndSearchStr := strings.Split(command, "[")
-
-	grammaticalExpName = grammaticalExpAndSearchStr[0]
-	searchString = strings.Replace(grammaticalExpAndSearchStr[1], "]", "", 1)
-
-	grammaticalExp := grammar[grammaticalExpName]
-
-	sectionsFromGrammaticalExp, err = executeGramaticalExpression(grammaticalExp, searchString, section)
+	sectionsFromExpression, err = executeGrammaticalExpression(grammaticalExp, searchQuery, section)
 
 	if err != nil {
 		return []Section{}, err
 	}
 
 	if index == len(commands)-1 {
-		return sectionsFromGrammaticalExp, nil
+		return sectionsFromExpression, nil
 	}
 
-	for _, sectionFromGrammaticalExp := range sectionsFromGrammaticalExp {
+	return executeNextCommand(commands, index + 1, sectionsFromExpression)
+}
 
-		sectionsFromNextCommand, err := executeCommands(commands, index + 1, sectionFromGrammaticalExp)
+func executeNextCommand(commands []string, index int, sections []Section) ([]Section, error) {
 
-		if err != nil {
-			return []Section{}, err
-		}
+	var sectionsToReturn []Section
+
+	for _, section := range sections {
+
+		sectionsFromNextCommand, nextCommandErr := executeCommands(commands, index, section)
 
 		sectionsToReturn = append(sectionsToReturn, sectionsFromNextCommand...)
+
+		if nextCommandErr != nil {
+			return []Section{}, nextCommandErr
+		}
 	}
 
 	return sectionsToReturn, nil
 }
 
-func executeGramaticalExpression(grammaticalExp GrammaticalExpression, searchString string, section Section) ([]Section, error) {
+func interpretCommand(command string) (grammaticalExp GrammaticalExpression, query string, err error){
+
+	grammaticalExpName := getGrammaticalExpFromCommand(command)
+	query = getQueryFromCommand(command)
+
+	if len(grammaticalExpName) == 0 || len(query) == 0 {
+		return nil, "", errors.New("given command does not contain [] with a search query, " + command)
+	}
+
+	return grammar[grammaticalExpName], query, nil
+}
+
+func getGrammaticalExpFromCommand(command string) string {
+
+	if !strings.Contains(command, "[") {
+		return ""
+	}
+
+	grammaticalExpAndSearchStr := strings.Split(command, "[")
+
+	return grammaticalExpAndSearchStr[0]
+
+}
+
+func getQueryFromCommand(command string) string {
+
+	if !strings.Contains(command, "[") {
+		return ""
+	}
+
+	grammaticalExpAndSearchStr := strings.Split(command, "[")
+
+	return strings.Replace(grammaticalExpAndSearchStr[1], "]", "", 1)
+
+}
+
+func executeGrammaticalExpression(grammaticalExp GrammaticalExpression, searchString string, section Section) ([]Section, error) {
 
 	var sectionsFromGrammaticalExp []Section
 
 	switch grammaticalExp.GetType() {
 
 	case "Composition":
-		composition, ok := grammaticalExp.(Composition)
-
-		if !ok {
-			return []Section{}, errors.New("Composition GrammaticalExpression could not be casted to Composition")
-		}
-		sectionsFromGrammaticalExp = executeCompositionExpression(composition, searchString, section)
-
+		return executeCompositionExpression(grammaticalExp, searchString, section)
 	case "Or":
-		fmt.Println("Or.")
+		return executeOrExpression(grammaticalExp, searchString, section)
 	case "SinglePattern":
 		fmt.Println("SinglePattern")
 	case "MatchedSinglePattern":
@@ -148,13 +176,39 @@ func executeGramaticalExpression(grammaticalExp GrammaticalExpression, searchStr
 	case "OpenClosedPattern":
 		fmt.Println("OpenClosedPattern")
 	default:
-
+		return []Section{}, errors.New(fmt.Sprintf("Unable to determine the type of grammatical expression: %s", grammaticalExp.GetType()))
 	}
 
 	return sectionsFromGrammaticalExp, nil
 }
 
-func executeCompositionExpression(comp Composition, query string, section Section) []Section {
-	return []Section{}
+
+func executeOrExpression(grammaticalExp GrammaticalExpression, query string, section Section) ([]Section, error) {
+	or, ok := grammaticalExp.(Or)
+
+	if !ok {
+		return []Section{}, errors.New("Or GrammaticalExpression could not be casted to Or object")
+	}
+
+	return performOrExpression(or, query, section)
+}
+
+func performOrExpression(or Or, query string, section Section) ([]Section, error) {
+	return []Section{}, nil
+}
+
+func executeCompositionExpression(grammaticalExp GrammaticalExpression, query string, section Section) ([]Section, error) {
+
+	composition, ok := grammaticalExp.(Composition)
+
+	if !ok {
+		return []Section{}, errors.New("Composition GrammaticalExpression could not be casted to Composition object")
+	}
+
+	return performCompositionExpression(composition, query, section)
+}
+
+func performCompositionExpression(composition Composition, query string, section Section) ([]Section, error) {
+	return []Section{}, nil
 }
 
