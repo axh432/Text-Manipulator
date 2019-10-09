@@ -66,7 +66,11 @@ var grammar = map[string] GrammaticalExpression {
 
 func Test_parsePath(t *testing.T) {
 
+	//todo: grow out algorithm
 	query := "/CurlyCodeBlockWithHeader[stage('Example Build')]/CurlyCodeBlockWithHeader[steps]/Line[1]"
+
+	//todo: find adjacent algorithm
+	altQuery := "/stage('Example Build')|CurlyCodeBlock/steps|CurlyCodeBlock/sh 'mvn|Line"
 
 
 }
@@ -166,15 +170,20 @@ func executeGrammaticalExpression(grammaticalExp GrammaticalExpression, searchSt
 	switch grammaticalExp.GetType() {
 
 	case "Composition":
-		return executeCompositionExpression(grammaticalExp, searchString, section)
+		//return executeCompositionExpression(grammaticalExp, searchString, section)
 	case "Or":
-		return executeOrExpression(grammaticalExp, searchString, section)
+		//return executeOrExpression(grammaticalExp, searchString, section)
 	case "SinglePattern":
 		fmt.Println("SinglePattern")
 	case "MatchedSinglePattern":
 		fmt.Println("MatchedSinglePattern")
 	case "OpenClosedPattern":
-		fmt.Println("OpenClosedPattern")
+		openClosedPattern, err := castToOpenClosedPattern(grammaticalExp)
+		if err != nil{
+			return []Section{}, err
+		}
+		return executeOpenClosedPatternExpression(openClosedPattern, section)
+
 	default:
 		return []Section{}, errors.New(fmt.Sprintf("Unable to determine the type of grammatical expression: %s", grammaticalExp.GetType()))
 	}
@@ -182,33 +191,48 @@ func executeGrammaticalExpression(grammaticalExp GrammaticalExpression, searchSt
 	return sectionsFromGrammaticalExp, nil
 }
 
-
-func executeOrExpression(grammaticalExp GrammaticalExpression, query string, section Section) ([]Section, error) {
-	or, ok := grammaticalExp.(Or)
-
-	if !ok {
-		return []Section{}, errors.New("Or GrammaticalExpression could not be casted to Or object")
-	}
-
-	return performOrExpression(or, query, section)
-}
-
-func performOrExpression(or Or, query string, section Section) ([]Section, error) {
-	return []Section{}, nil
-}
-
-func executeCompositionExpression(grammaticalExp GrammaticalExpression, query string, section Section) ([]Section, error) {
-
-	composition, ok := grammaticalExp.(Composition)
+//Todo: figure out what you are doing with error handling!
+func castToOpenClosedPattern(grammaticalExp GrammaticalExpression) (OpenClosedPattern, error){
+	openClosedPattern, ok := grammaticalExp.(OpenClosedPattern)
 
 	if !ok {
-		return []Section{}, errors.New("Composition GrammaticalExpression could not be casted to Composition object")
+		return OpenClosedPattern{}, errors.New("OpenClosedPattern GrammaticalExpression could not be casted to OpenClosedPattern object. Something is very wrong")
 	}
 
-	return performCompositionExpression(composition, query, section)
+	return openClosedPattern, nil
 }
 
-func performCompositionExpression(composition Composition, query string, section Section) ([]Section, error) {
-	return []Section{}, nil
+func executeOpenClosedPatternExpression(openClosedPattern OpenClosedPattern, section Section) ([]Section, error) {
+
+	restOfFile := Section{ section.start, len(section.source), section.source }
+
+	codeBlock := restOfFile.findFirstCodeBlock(&openClosedPattern)
+
+	if codeBlock.isEmpty() {
+		return []Section{}, errors.New("open closed block could not be found")
+	}
+
+	if thereIsSomethingBetweenSections(section, codeBlock) {
+		return []Section{}, errors.New("an open closed block could not be found immediately after the given section")
+	}
+
+	return []Section{ codeBlock }, nil
 }
+
+func thereIsSomethingBetweenSections(startSection Section, endSection Section) bool {
+
+	gapBetween := Section{ startSection.end +1, endSection.start -1, startSection.source }
+
+	anyNonWhitespace := MustCompile(`\S`)
+
+	if(anyNonWhitespace.MatchString(gapBetween.toString())){
+		return true
+	}
+
+	return false
+}
+
+
+
+
 
