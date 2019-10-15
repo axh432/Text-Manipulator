@@ -14,7 +14,7 @@ func dotAccess(path string, object reflect.Value){}
 
 func callFunction(args []reflect.Value){}
 
-func altFindFirstCodeBlock(s *Section, blockPattern *NestedOpenClosedPattern) (Section, error) {
+func altFindFirstCodeBlock(s *Section, blockPattern *OpenClosedPattern) (Section, error) {
 
 	matches := s.findAll(blockPattern.whole)
 	blockStack := stack.New()

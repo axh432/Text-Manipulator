@@ -1,5 +1,6 @@
 package main
 
+/*
 import (
 	"errors"
 	"fmt"
@@ -70,7 +71,7 @@ func Test_parsePath(t *testing.T) {
 	query := "/CurlyCodeBlockWithHeader[stage('Example Build')]/CurlyCodeBlockWithHeader[steps]/Line[1]"
 
 	//todo: find adjacent algorithm
-	altQuery := "/stage('Example Build')|CurlyCodeBlock/steps|CurlyCodeBlock/sh 'mvn|Line"
+	altQuery := `/"stage('Example Build')"|CurlyCodeBlock/"steps"|CurlyCodeBlock/"sh 'mvn"/Line`
 
 
 }
@@ -231,7 +232,7 @@ func thereIsSomethingBetweenSections(startSection Section, endSection Section) b
 
 	return false
 }
-
+*/
 
 
 
