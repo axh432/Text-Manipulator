@@ -95,7 +95,15 @@ func Test_parse(t *testing.T){
 
 		tokens = append(tokens, token)
 
-		fmt.Printf("text: %q, tags: %v\n", token.Text, token.Tags)
+		//fmt.Printf("text: %q, tags: %v\n", token.Text, token.Tags)
+
+		firstTag := token.Tags[0]
+
+		if(firstTag == "whitespace"){
+			fmt.Printf(token.Text)
+		}else {
+			fmt.Printf(firstTag)
+		}
 	}
 
 }
@@ -112,6 +120,16 @@ func Test_splitKeepDelimiter(t *testing.T){
 	}
 
 
+}
+
+func Test_splitStuff(t *testing.T){
+	re := MustCompile(`[[:punct:]]|[[:space:]]`)
+
+	splitStrings := splitKeepDelimiter(re, "That'll teach them!")
+
+	for _, token := range splitStrings {
+		fmt.Println(token)
+	}
 }
 
 func Test_findStringIndex(t *testing.T){

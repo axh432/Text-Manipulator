@@ -9,7 +9,7 @@ import (
 
 func Test_parsePath(t *testing.T) {
 
-    altQuery := `/"Example Build')"|CurlyCodeBlock/steps|CurlyCodeBlock/"--version"|Line`
+    altQuery := `/"Example Build')"|CurlyCodeBlock/agent|CurlyCodeBlock/maven`
 
     re := regexp.MustCompile(`[|\/]`)
 
