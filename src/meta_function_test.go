@@ -56,13 +56,11 @@ func createDetermineIfBlockIsFoundAction(blockStack *stack.Stack, match *Section
 
 //this needs to have a default statement! never call without one at the end.
 func Switch(branches []Branch) Section {
-
 	for _, branch := range branches {
 		if branch.cond {
 			return branch.action()
 		}
 	}
-
 	//this should never be called if the end branch is always the default statement.
 	branchesSize := len(branches)
 	return branches[branchesSize - 1].action()
@@ -82,7 +80,6 @@ func determineIfBlockIsFound(blockStack *stack.Stack, match *Section) Section {
 
 func determineBasedOnMatch(match *Section) Section {
 	symbol := match.toString()
-
 	return Switch([]Branch{
 		{blockPattern.isOpen(symbol), createPushOpeningMatchAction(blockStack, match) },
 		{blockPattern.isClosed(symbol), createDetermineIfBlockIsFoundAction(blockStack, match)},
@@ -90,9 +87,29 @@ func determineBasedOnMatch(match *Section) Section {
 	})
 }
 
-func (s *Section) findFirstCodeBlock() Section {
-	matches = s.findAll(blockPattern.whole)
-	blockStack = stack.New()
+func Filter(sections []Section, function func(section *Section) bool) (prod []Section) {
+	for _, section := range sections {
+		if(function(&section)){
+			prod = append(prod, section)
+		}
+	}
+	return
+}
+
+func Map(sections []Section, function func(match *Section) Section) (prod []Section) {
+	for _, section := range sections {
+		prod = append(prod, function(&section))
+	}
+	return
+}
+
+func loopThroughMatches(sections []Section) Section {
+
+	isSectionNotEmpty := func (section *Section) bool {
+		return !section.isEmpty()
+	}
+
+	return Filter(Map(sections, determineBasedOnMatch), isSectionNotEmpty)[0]
 
 	for _, match := range matches {
 
@@ -105,4 +122,10 @@ func (s *Section) findFirstCodeBlock() Section {
 	}
 
 	return Section{}
+}
+
+func (s *Section) findFirstCodeBlock() Section {
+	matches = s.findAll(blockPattern.whole)
+	blockStack = stack.New()
+	return loopThroughMatches(matches)
 }
