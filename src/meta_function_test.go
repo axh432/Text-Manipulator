@@ -1,3 +1,5 @@
+// +build test
+
 package main
 
 import (
@@ -22,10 +24,10 @@ func createCodeBlock(match *Section) Section {
 	return Section{startMatch.start, match.end, startMatch.source}
 }
 
-type Action func () Section
+type Action func() Section
 
 type Branch struct {
-	cond bool
+	cond   bool
 	action Action
 }
 
@@ -63,7 +65,7 @@ func Switch(branches []Branch) Section {
 	}
 	//this should never be called if the end branch is always the default statement.
 	branchesSize := len(branches)
-	return branches[branchesSize - 1].action()
+	return branches[branchesSize-1].action()
 }
 
 //stack length is exactly 1 : create the code block
@@ -81,7 +83,7 @@ func determineIfBlockIsFound(blockStack *stack.Stack, match *Section) Section {
 func determineBasedOnMatch(match *Section) Section {
 	symbol := match.toString()
 	return Switch([]Branch{
-		{blockPattern.isOpen(symbol), createPushOpeningMatchAction(blockStack, match) },
+		{blockPattern.isOpen(symbol), createPushOpeningMatchAction(blockStack, match)},
 		{blockPattern.isClosed(symbol), createDetermineIfBlockIsFoundAction(blockStack, match)},
 		{true, createEmptySectionAction()},
 	})
@@ -89,7 +91,7 @@ func determineBasedOnMatch(match *Section) Section {
 
 func Filter(sections []Section, function func(section *Section) bool) (prod []Section) {
 	for _, section := range sections {
-		if(function(&section)){
+		if function(&section) {
 			prod = append(prod, section)
 		}
 	}
@@ -105,13 +107,13 @@ func Map(sections []Section, function func(match *Section) Section) (prod []Sect
 
 func loopThroughMatches(sections []Section) Section {
 
-	isSectionNotEmpty := func (section *Section) bool {
+	isSectionNotEmpty := func(section *Section) bool {
 		return !section.isEmpty()
 	}
 
 	return Filter(Map(sections, determineBasedOnMatch), isSectionNotEmpty)[0]
 
-	for _, match := range matches {
+	/*for _, match := range matches {
 
 		codeBlock := determineBasedOnMatch(&match)
 
@@ -121,7 +123,7 @@ func loopThroughMatches(sections []Section) Section {
 
 	}
 
-	return Section{}
+	return Section{}*/
 }
 
 func (s *Section) findFirstCodeBlock() Section {
