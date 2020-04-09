@@ -1,6 +1,6 @@
 package new_regex
 
-func StringToCharacterSet(characters string) Expression {
+func SetOfCharacters(characters string) Expression {
 	return func(iter *Iterator) bool {
 		if !iter.HasNext() {
 			return false

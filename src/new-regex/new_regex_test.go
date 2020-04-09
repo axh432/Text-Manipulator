@@ -6,11 +6,15 @@ import (
 )
 
 func Test_match(t *testing.T) {
-	stringToMatch := "voidvoid (l r i){+}"
 
-	exp := Sequence(Range(StringToCharacterSet("ovid"), 4, 8), Range(Whitespace, 1, -1), StringLiteral("(l r i)"))
+	t.Run("match the string", func(t *testing.T){
+		stringToMatch := "voidvoid (l r i){+}"
 
-	require.True(t,
-		Match(stringToMatch, exp))
+		exp := Sequence(Range(SetOfCharacters("ovid"), 4, 8), Whitespace, SequenceOfCharacters("(l r i)"))
+
+		require.True(t,
+			Match(stringToMatch, exp))
+	})
+
 
 }
