@@ -1,16 +1,16 @@
 package new_regex
 
-func Range(set Expression, min int, max int) Expression {
+func Range(exp Expression, min int, max int) Expression {
 	return func(iter *Iterator) bool {
-		count := consecutiveCount(iter, set)
+		count := consecutiveCount(iter, exp)
 		return isCountRightNumberOfCharacters(count, min, max)
 	}
 }
 
-func consecutiveCount(iter *Iterator, charSet Expression) int {
+func consecutiveCount(iter *Iterator, exp Expression) int {
 	count := 0
 	for iter.HasNext() {
-		if !charSet(iter) {
+		if !exp(iter) {
 			iter.SafePrev()
 			break
 		}

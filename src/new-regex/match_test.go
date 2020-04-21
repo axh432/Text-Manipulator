@@ -7,7 +7,7 @@ import (
 
 func Test_match(t *testing.T) {
 
-	t.Run("match the string", func(t *testing.T){
+	t.Run("match the string", func(t *testing.T) {
 		stringToMatch := "voidvoid (l r i){+}"
 
 		exp := Sequence(Range(SetOfCharacters("ovid"), 4, 8), Whitespace, SequenceOfCharacters("(l r i)"))
@@ -15,6 +15,5 @@ func Test_match(t *testing.T) {
 		require.True(t,
 			Match(stringToMatch, exp))
 	})
-
 
 }

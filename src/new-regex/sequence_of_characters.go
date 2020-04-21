@@ -1,8 +1,13 @@
 package new_regex
 
-func SequenceOfCharacters(str string) Expression {
+func SequenceOfCharacters(sequence string) Expression {
 	return func(iter *Iterator) bool {
-		for _, char := range str {
+
+		if sequence == "" {
+			return false
+		}
+
+		for _, char := range sequence {
 			if !iter.HasNext() || char != iter.Next() {
 				return false
 			}

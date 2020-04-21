@@ -11,8 +11,12 @@ func CreateIterator(str string) Iterator {
 	return Iterator{index: 0, end: len(runes), runes: runes}
 }
 
-func (iter *Iterator) Reset() {
-	iter.index = 0
+func (iter *Iterator) GetIndex() int {
+	return iter.index
+}
+
+func (iter *Iterator) Reset(newIndex int) {
+	iter.index = newIndex
 }
 
 func (iter *Iterator) HasPrev() bool {

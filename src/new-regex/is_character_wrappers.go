@@ -1,6 +1,8 @@
 package new_regex
 
-import "unicode"
+import (
+	"unicode"
+)
 
 type IsCharacterFunction func(r rune) bool
 
