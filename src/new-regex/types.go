@@ -11,23 +11,28 @@ type MatchTree struct {
 
 func (mt *MatchTree) toString() string {
 	sb := strings.Builder{}
-	toStringRecursive(mt, &sb, 0)
+	toStringRecursive(mt, &sb, "")
 	return sb.String()
 }
 
-func toStringRecursive(mt *MatchTree, sb *strings.Builder, level int){
-	for i := 0; i < level; i++ {
-		sb.WriteString("\t")
+func toStringRecursive(mt *MatchTree, sb *strings.Builder, levelPadding string){
+	levelPadding = levelPadding + "\t\t"
+	sb.WriteString(levelPadding)
+	sb.WriteString("|")
+	sb.WriteString("\n")
+
+	sb.WriteString(levelPadding)
+	sb.WriteString("->[")
+	if mt.Name != "" {
+		sb.WriteString(mt.Name)
+		sb.WriteString(":")
 	}
-	sb.WriteString("<-[")
 	sb.WriteString(mt.Value)
-	sb.WriteString("]->")
+	sb.WriteString("]")
 	sb.WriteString("\n")
 	for _, child := range mt.Children {
-		toStringRecursive(&child, sb, level + 1)
+		toStringRecursive(&child, sb, levelPadding)
 	}
 }
 
-type Expression func(iter *Iterator) bool
-
-type Expression2 func(iter *Iterator) MatchTree
+type Expression func(iter *Iterator) MatchTree

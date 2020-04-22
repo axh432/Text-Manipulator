@@ -37,15 +37,6 @@ func TestIterator_Prev(t *testing.T) {
 	require.Equal(t, "(", string(iter.Prev()))
 }
 
-func TestIterator_SafePrev(t *testing.T) {
-	iter := CreateIterator("F (l r i){+}")
-
-	require.Equal(t, "�", string(iter.SafePrev()))
-
-	iter.Reset(3)
-	require.Equal(t, "(", string(iter.SafePrev()))
-}
-
 func TestIterator_Next(t *testing.T) {
 	iter := CreateIterator("F (l r i){+}")
 	require.Equal(t, "F", string(iter.Next()))

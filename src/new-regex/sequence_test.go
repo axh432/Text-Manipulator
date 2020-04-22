@@ -16,7 +16,7 @@ func TestSequence(t *testing.T) {
 
 		exp := Sequence(a, b, c)
 
-		matchResult := Match2(stringToMatch, exp)
+		matchResult := Match(stringToMatch, exp)
 
 		require.True(t, matchResult.isValid)
 		require.Equal(t, stringToMatch, matchResult.Value)
@@ -31,7 +31,7 @@ func TestSequence(t *testing.T) {
 
 		exp := Sequence(a, b, c)
 
-		matchResult := Match2(stringToMatch, exp)
+		matchResult := Match(stringToMatch, exp)
 
 		require.False(t, matchResult.isValid)
 		require.Equal(t, "", matchResult.Value)
@@ -46,7 +46,7 @@ func TestSequence(t *testing.T) {
 
 		exp := Sequence(a, b, c)
 
-		matchResult := Match2(stringToMatch, exp)
+		matchResult := Match(stringToMatch, exp)
 
 		require.False(t, matchResult.isValid)
 		require.Equal(t, "ab", matchResult.Value)
@@ -61,7 +61,7 @@ func TestSequence(t *testing.T) {
 
 		exp := Sequence(a, b, c)
 
-		matchResult := Match2(stringToMatch, exp)
+		matchResult := Match(stringToMatch, exp)
 
 		require.False(t, matchResult.isValid)
 		require.Equal(t, "a", matchResult.Value)
@@ -76,7 +76,7 @@ func TestSequence(t *testing.T) {
 
 		exp := Sequence(a, b, c)
 
-		matchResult := Match2(stringToMatch, exp)
+		matchResult := Match(stringToMatch, exp)
 
 		require.True(t, matchResult.isValid)
 		require.Equal(t, "abc", matchResult.Value)
@@ -91,7 +91,7 @@ func TestSequence(t *testing.T) {
 
 		exp := Sequence(a, b, c)
 
-		matchResult := Match2(stringToMatch, exp)
+		matchResult := Match(stringToMatch, exp)
 
 		require.False(t, matchResult.isValid)
 		require.Equal(t, "ab", matchResult.Value)
@@ -104,7 +104,7 @@ func TestSequence(t *testing.T) {
 
 		exp := Sequence(a, b, c)
 
-		matchResult := Match2("", exp)
+		matchResult := Match("", exp)
 
 		require.False(t, matchResult.isValid)
 		require.Equal(t, "", matchResult.Value)
@@ -112,7 +112,7 @@ func TestSequence(t *testing.T) {
 
 	t.Run("when given an empty sequence return false", func(t *testing.T) {
 		exp := Sequence()
-		matchResult := Match2("a", exp)
+		matchResult := Match("a", exp)
 
 		require.False(t, matchResult.isValid)
 		require.Equal(t, "", matchResult.Value)

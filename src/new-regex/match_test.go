@@ -10,11 +10,12 @@ func Test_match(t *testing.T) {
 	t.Run("match the string", func(t *testing.T) {
 		stringToMatch := "voidvoid (l r i){+}"
 
-		exp := Sequence(Range(SequenceOfCharacters("void"), 2, 2), Whitespace, SequenceOfCharacters("(l r i){+}"))
+		exp := Sequence(StringStart, Range(SequenceOfCharacters("void"), 2, 2), Whitespace, SequenceOfCharacters("(l r i){+}"), StringEnd)
 
-		result := Match2(stringToMatch, exp)
+		result := Match(stringToMatch, exp)
 
 		require.True(t, result.isValid)
+		require.Equal(t, stringToMatch, result.Value)
 		println(result.toString())
 	})
 

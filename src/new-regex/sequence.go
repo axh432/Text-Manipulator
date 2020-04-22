@@ -2,7 +2,7 @@ package new_regex
 
 import "strings"
 
-func Sequence(expressions ...Expression2) Expression2 {
+func Sequence(expressions ...Expression) Expression {
 	return func(iter *Iterator) MatchTree {
 
 		if len(expressions) == 0 {

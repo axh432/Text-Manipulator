@@ -14,7 +14,7 @@ var (
 	Symbol      = createSetFromIsCharacterFunction(unicode.IsSymbol)
 )
 
-func createSetFromIsCharacterFunction(isCharacterFunction IsCharacterFunction) Expression2 {
+func createSetFromIsCharacterFunction(isCharacterFunction IsCharacterFunction) Expression {
 	return func(iter *Iterator) MatchTree {
 		mt := MatchTree{}
 		if iter.HasNext() {

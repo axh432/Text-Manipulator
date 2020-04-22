@@ -32,13 +32,6 @@ func (iter *Iterator) Prev() rune {
 	return iter.runes[iter.index]
 }
 
-func (iter *Iterator) SafePrev() rune {
-	if iter.HasPrev() {
-		return iter.Prev()
-	}
-	return -1
-}
-
 func (iter *Iterator) Next() rune {
 	nextRune := iter.runes[iter.index]
 	iter.index++

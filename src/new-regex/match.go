@@ -1,11 +1,6 @@
 package new_regex
 
-func Match(stringToMatch string, expression Expression) bool {
+func Match(stringToMatch string, exp Expression) MatchTree {
 	iter := CreateIterator(stringToMatch)
-	return expression(&iter)
-}
-
-func Match2(stringToMatch string, expression Expression2) MatchTree {
-	iter := CreateIterator(stringToMatch)
-	return expression(&iter)
+	return exp(&iter)
 }

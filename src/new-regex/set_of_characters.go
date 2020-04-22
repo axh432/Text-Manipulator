@@ -1,6 +1,6 @@
 package new_regex
 
-func SetOfCharacters(characters string) Expression2 {
+func SetOfCharacters(characters string) Expression {
 	return func(iter *Iterator) MatchTree {
 		if !iter.HasNext() {
 			return MatchTree{}

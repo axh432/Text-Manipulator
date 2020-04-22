@@ -1,6 +1,6 @@
 package new_regex
 
-func Set(expressions ...Expression2) Expression2 {
+func Set(expressions ...Expression) Expression {
 	return func(iter *Iterator) MatchTree {
 		startingIndex := iter.GetIndex()
 		for _, exp := range expressions {

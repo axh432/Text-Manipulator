@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-func Range(exp Expression2, min int, max int) Expression2 {
+func Range(exp Expression, min int, max int) Expression {
 	return func(iter *Iterator) MatchTree {
 		mt := consecutiveCount(iter, exp)
 		if isCountRightNumberOfCharacters(len(mt.Children), min, max) {
@@ -37,7 +37,7 @@ func createValue(mt *MatchTree){
 	mt.Value = sb.String()
 }
 
-func consecutiveCount(iter *Iterator, exp Expression2) MatchTree {
+func consecutiveCount(iter *Iterator, exp Expression) MatchTree {
 	mt := MatchTree{}
 	for iter.HasNext() {
 		startingIndex := iter.GetIndex()
