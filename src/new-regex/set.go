@@ -9,7 +9,7 @@ func Set(expressions ...Expression) Expression {
 				return MatchTree{
 					isValid:  true,
 					Value:    match.Value,
-					Name:     "",
+					Label:    "",
 					Children: []MatchTree{match},
 				}
 			} else {

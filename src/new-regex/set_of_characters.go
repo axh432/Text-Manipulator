@@ -11,7 +11,7 @@ func SetOfCharacters(characters string) Expression {
 				return MatchTree {
 					isValid:  true,
 					Value:    string(nextRune),
-					Name:     "",
+					Label:    "",
 					Children: nil,
 				}
 			}

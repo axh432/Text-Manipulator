@@ -5,7 +5,7 @@ import "strings"
 type MatchTree struct {
 	isValid  bool
 	Value    string
-	Name     string
+	Label    string
 	Children []MatchTree
 }
 
@@ -23,8 +23,8 @@ func toStringRecursive(mt *MatchTree, sb *strings.Builder, levelPadding string){
 
 	sb.WriteString(levelPadding)
 	sb.WriteString("->[")
-	if mt.Name != "" {
-		sb.WriteString(mt.Name)
+	if mt.Label != "" {
+		sb.WriteString(mt.Label)
 		sb.WriteString(":")
 	}
 	sb.WriteString(mt.Value)

@@ -15,7 +15,7 @@ func SequenceOfCharacters(sequence string) Expression {
 				return MatchTree{
 					isValid:  false,
 					Value:    sb.String(),
-					Name:     "",
+					Label:    "",
 					Children: nil,
 				}
 			}else{
@@ -26,7 +26,7 @@ func SequenceOfCharacters(sequence string) Expression {
 		return MatchTree{
 			isValid:  true,
 			Value:    sb.String(),
-			Name:     "",
+			Label:    "",
 			Children: nil,
 		}
 	}
