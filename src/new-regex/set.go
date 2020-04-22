@@ -1,15 +1,21 @@
 package new_regex
 
-func Set(expressions ...Expression) Expression {
-	return func(iter *Iterator) bool {
+func Set(expressions ...Expression2) Expression2 {
+	return func(iter *Iterator) MatchTree {
 		startingIndex := iter.GetIndex()
-		for _, expression := range expressions {
-			if expression(iter) {
-				return true
+		for _, exp := range expressions {
+			match := exp(iter)
+			if match.isValid {
+				return MatchTree{
+					isValid:  true,
+					Value:    match.Value,
+					Name:     "",
+					Children: []MatchTree{match},
+				}
 			} else {
 				iter.Reset(startingIndex)
 			}
 		}
-		return false
+		return MatchTree{}
 	}
 }

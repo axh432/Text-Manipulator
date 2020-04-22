@@ -14,11 +14,16 @@ var (
 	Symbol      = createSetFromIsCharacterFunction(unicode.IsSymbol)
 )
 
-func createSetFromIsCharacterFunction(isCharacterFunction IsCharacterFunction) Expression {
-	return func(iter *Iterator) bool {
+func createSetFromIsCharacterFunction(isCharacterFunction IsCharacterFunction) Expression2 {
+	return func(iter *Iterator) MatchTree {
+		mt := MatchTree{}
 		if iter.HasNext() {
-			return isCharacterFunction(iter.Next())
+			nextRune := iter.Next()
+			if isCharacterFunction(nextRune) {
+				mt.isValid = true
+				mt.Value = string(nextRune)
+			}
 		}
-		return false
+		return mt
 	}
 }

@@ -1,16 +1,21 @@
 package new_regex
 
-func SetOfCharacters(characters string) Expression {
-	return func(iter *Iterator) bool {
+func SetOfCharacters(characters string) Expression2 {
+	return func(iter *Iterator) MatchTree {
 		if !iter.HasNext() {
-			return false
+			return MatchTree{}
 		}
 		nextRune := iter.Next()
 		for _, char := range characters {
 			if char == nextRune {
-				return true
+				return MatchTree {
+					isValid:  true,
+					Value:    string(nextRune),
+					Name:     "",
+					Children: nil,
+				}
 			}
 		}
-		return false
+		return MatchTree{}
 	}
 }

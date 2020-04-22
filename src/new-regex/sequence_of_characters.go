@@ -1,17 +1,33 @@
 package new_regex
 
-func SequenceOfCharacters(sequence string) Expression {
-	return func(iter *Iterator) bool {
+import "strings"
+
+func SequenceOfCharacters(sequence string) Expression2 {
+	return func(iter *Iterator) MatchTree {
 
 		if sequence == "" {
-			return false
+			return MatchTree{}
 		}
 
+		sb := strings.Builder{}
 		for _, char := range sequence {
 			if !iter.HasNext() || char != iter.Next() {
-				return false
+				return MatchTree{
+					isValid:  false,
+					Value:    sb.String(),
+					Name:     "",
+					Children: nil,
+				}
+			}else{
+				sb.WriteRune(char)
 			}
 		}
-		return true
+
+		return MatchTree{
+			isValid:  true,
+			Value:    sb.String(),
+			Name:     "",
+			Children: nil,
+		}
 	}
 }

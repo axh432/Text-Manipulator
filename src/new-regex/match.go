@@ -1,8 +1,11 @@
 package new_regex
 
-type Expression func(iter *Iterator) bool
-
 func Match(stringToMatch string, expression Expression) bool {
+	iter := CreateIterator(stringToMatch)
+	return expression(&iter)
+}
+
+func Match2(stringToMatch string, expression Expression2) MatchTree {
 	iter := CreateIterator(stringToMatch)
 	return expression(&iter)
 }

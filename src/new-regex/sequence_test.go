@@ -16,8 +16,10 @@ func TestSequence(t *testing.T) {
 
 		exp := Sequence(a, b, c)
 
-		require.True(t,
-			Match(stringToMatch, exp))
+		matchResult := Match2(stringToMatch, exp)
+
+		require.True(t, matchResult.isValid)
+		require.Equal(t, stringToMatch, matchResult.Value)
 	})
 
 	t.Run("when given a string of characters that differs in the beginning return false", func(t *testing.T) {
@@ -29,8 +31,10 @@ func TestSequence(t *testing.T) {
 
 		exp := Sequence(a, b, c)
 
-		require.False(t,
-			Match(stringToMatch, exp))
+		matchResult := Match2(stringToMatch, exp)
+
+		require.False(t, matchResult.isValid)
+		require.Equal(t, "", matchResult.Value)
 	})
 
 	t.Run("when given a string of characters that differs in the end return false", func(t *testing.T) {
@@ -42,8 +46,10 @@ func TestSequence(t *testing.T) {
 
 		exp := Sequence(a, b, c)
 
-		require.False(t,
-			Match(stringToMatch, exp))
+		matchResult := Match2(stringToMatch, exp)
+
+		require.False(t, matchResult.isValid)
+		require.Equal(t, "ab", matchResult.Value)
 	})
 
 	t.Run("when given a string of characters that differs in the middle return false", func(t *testing.T) {
@@ -55,8 +61,10 @@ func TestSequence(t *testing.T) {
 
 		exp := Sequence(a, b, c)
 
-		require.False(t,
-			Match(stringToMatch, exp))
+		matchResult := Match2(stringToMatch, exp)
+
+		require.False(t, matchResult.isValid)
+		require.Equal(t, "a", matchResult.Value)
 	})
 
 	t.Run("when given a string of characters that is longer than the sequence return true", func(t *testing.T) {
@@ -68,8 +76,10 @@ func TestSequence(t *testing.T) {
 
 		exp := Sequence(a, b, c)
 
-		require.True(t,
-			Match(stringToMatch, exp))
+		matchResult := Match2(stringToMatch, exp)
+
+		require.True(t, matchResult.isValid)
+		require.Equal(t, "abc", matchResult.Value)
 	})
 
 	t.Run("when given a string of characters that is shorter than the sequence return false", func(t *testing.T) {
@@ -81,8 +91,10 @@ func TestSequence(t *testing.T) {
 
 		exp := Sequence(a, b, c)
 
-		require.False(t,
-			Match(stringToMatch, exp))
+		matchResult := Match2(stringToMatch, exp)
+
+		require.False(t, matchResult.isValid)
+		require.Equal(t, "ab", matchResult.Value)
 	})
 
 	t.Run("when given an empty string return false", func(t *testing.T) {
@@ -91,11 +103,18 @@ func TestSequence(t *testing.T) {
 		c := SetOfCharacters("c")
 
 		exp := Sequence(a, b, c)
-		require.False(t, Match("", exp))
+
+		matchResult := Match2("", exp)
+
+		require.False(t, matchResult.isValid)
+		require.Equal(t, "", matchResult.Value)
 	})
 
 	t.Run("when given an empty sequence return false", func(t *testing.T) {
 		exp := Sequence()
-		require.False(t, Match("a", exp))
+		matchResult := Match2("a", exp)
+
+		require.False(t, matchResult.isValid)
+		require.Equal(t, "", matchResult.Value)
 	})
 }

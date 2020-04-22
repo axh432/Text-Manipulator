@@ -1,17 +1,29 @@
 package new_regex
 
-func Sequence(expressions ...Expression) Expression {
-	return func(iter *Iterator) bool {
+import "strings"
+
+func Sequence(expressions ...Expression2) Expression2 {
+	return func(iter *Iterator) MatchTree {
 
 		if len(expressions) == 0 {
-			return false
+			return MatchTree{}
 		}
 
+		mt := MatchTree{}
+		sb := strings.Builder{}
+
 		for _, exp := range expressions {
-			if !exp(iter) {
-				return false
+			match := exp(iter)
+			if match.isValid {
+				sb.WriteString(match.Value)
+				mt.Children = append(mt.Children, match)
+				mt.Value = sb.String()
+			}else{
+				return mt
 			}
 		}
-		return true
+
+		mt.isValid = true
+		return mt
 	}
 }
