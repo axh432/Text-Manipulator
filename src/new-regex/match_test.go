@@ -1,6 +1,7 @@
 package new_regex
 
 import (
+	"fmt"
 	"github.com/stretchr/testify/require"
 	"testing"
 )
@@ -82,27 +83,32 @@ func Test_match(t *testing.T) {
 		require.False(t, Match("String ", parameter).isValid)
 	})
 
-	/*t.Run("java list of function parameters", func(t *testing.T) {
-		whitespaceNoNewLine := SetOfCharacters(" \t")
+	t.Run("java list of function parameters", func(t *testing.T) {
+		whitespaceNoNewLine := Label(SetOfCharacters(" \t"), "whitespaceNoNewLine")
 		underscore := SetOfCharacters("_")
 		comma := SetOfCharacters(",")
 		name := Sequence(Set(Letter, underscore), Range(Set(Letter, Number, underscore), 0, -1))
-		typeName := name
-		variableName := name
-		parameter := Sequence(typeName, Range(whitespaceNoNewLine, 1, -1), variableName)
+		typeName := Label(name, "typename")
+		variableName := Label(name, "variableName")
+		parameter := Label(Sequence(typeName, Range(whitespaceNoNewLine, 1, -1), variableName), "parameter")
 
-		parameterComma := Sequence(parameter, Range(whitespaceNoNewLine, 0, -1), comma)
+		parameterComma := Label(Sequence(parameter, Range(whitespaceNoNewLine, 0, -1), comma), "parameterComma")
 
-		listOfParameters := Sequence(parameterComma, Range(Sequence(whitespaceNoNewLine, parameterComma), 0, -1), parameter)
+		parameterCommaRange := Label(Range(Sequence(whitespaceNoNewLine, parameterComma), 0, -1), "parameterCommaRange")
+
+		listOfParameters := Sequence(parameterComma, parameterCommaRange, Range(whitespaceNoNewLine, 0, -1), parameter)
+
+		//listOfParameters := Sequence(parameterComma, parameterCommaRange, parameter)
 
 		result := Match("int width, int length", listOfParameters)
 
-		fmt.Println(result.toString())
+		fmt.Println(result.DebugLine)
 
 		require.True(t, Match("int width, int length", listOfParameters).isValid)
-		require.True(t, Match("int width  , int length", listOfParameters).isValid)
+		require.True(t, Match("int width, int length, string name", listOfParameters).isValid)
+		//require.True(t, Match("int width  , int length", listOfParameters).isValid)
 
-	})*/
+	})
 
 	/*t.Run("sophisticated match the string", func(t *testing.T) {
 

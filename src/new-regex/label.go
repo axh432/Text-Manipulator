@@ -7,6 +7,7 @@ func Label(exp Expression, label string) Expression {
 			isValid:  match.isValid,
 			Value:    match.Value,
 			Label:    label,
+			DebugLine: match.Label + ": " + match.DebugLine,
 			Children: []MatchTree{match},
 		}
 	}

@@ -1,32 +1,32 @@
 package new_regex
 
 import (
-	"math"
 	"strings"
 )
 
 func Range(exp Expression, min int, max int) Expression {
 	return func(iter *Iterator) MatchTree {
-		mt := consecutiveCount(iter, exp)
-		if isCountRightNumberOfCharacters(len(mt.Children), min, max) {
-			mt.isValid = true
-			createValue(&mt)
-		}else{
+		mt := MatchTree{}
+		mt.Label = "Range"
+		consecutiveCount(iter, exp, &mt)
+		createValue(&mt)
+		count := len(mt.Children)
+
+		if countAboveMax(count, max){
 			mt.isValid = false
-			cullChildren(&mt, max)
-			createValue(&mt)
+			mt.DebugLine = mt.Value + " <- there are more than the max value of " + string(max)
+			return mt
 		}
+
+		if countBelowMin(count, min){
+			mt.isValid = false
+			mt.DebugLine = mt.Value + " <- there are less than the min value of " + string(min)
+			return mt
+		}
+
+		mt.isValid = true
 		return mt
 	}
-}
-
-func cullChildren(mt *MatchTree, max int){
-	newChildren := []MatchTree{}
-	loopLength := int(math.Min(float64(len(mt.Children)),float64(max)))
-	for i := 0; i < loopLength; i++ {
-		newChildren = append(newChildren, mt.Children[i])
-	}
-	mt.Children = newChildren
 }
 
 func createValue(mt *MatchTree){
@@ -37,8 +37,7 @@ func createValue(mt *MatchTree){
 	mt.Value = sb.String()
 }
 
-func consecutiveCount(iter *Iterator, exp Expression) MatchTree {
-	mt := MatchTree{}
+func consecutiveCount(iter *Iterator, exp Expression, mt *MatchTree) {
 	for iter.HasNext() {
 		startingIndex := iter.GetIndex()
 		match := exp(iter)
@@ -49,12 +48,16 @@ func consecutiveCount(iter *Iterator, exp Expression) MatchTree {
 			break
 		}
 	}
-	return mt
 }
 
-func isCountRightNumberOfCharacters(count, min, max int) bool {
-	if max < 0 { //if unlimited
-		return count >= min
+func countAboveMax(count, max int) bool {
+	if max < 0 {
+		return false //negative numbers classed as infinity
+	}else{
+		return count > max
 	}
-	return count >= min && count <= max
+}
+
+func countBelowMin(count, min int) bool {
+	return count < min
 }

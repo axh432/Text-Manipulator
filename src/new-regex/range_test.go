@@ -35,7 +35,7 @@ func TestRange(t *testing.T) {
 		exp := Range(a, 1, 1)
 		matchResult := Match("aa", exp)
 		require.False(t, matchResult.isValid)
-		require.Equal(t, "a", matchResult.Value)
+		require.Equal(t, "aa", matchResult.Value)
 	})
 
 	t.Run("when given a string that is less than a range return false", func(t *testing.T) {

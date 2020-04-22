@@ -4,12 +4,13 @@ import "strings"
 
 func Sequence(expressions ...Expression) Expression {
 	return func(iter *Iterator) MatchTree {
+		mt := MatchTree{}
 
 		if len(expressions) == 0 {
-			return MatchTree{}
+			mt.DebugLine = "sequence of expressions is empty"
+			return mt
 		}
 
-		mt := MatchTree{}
 		sb := strings.Builder{}
 
 		for _, exp := range expressions {
@@ -19,6 +20,7 @@ func Sequence(expressions ...Expression) Expression {
 				mt.Children = append(mt.Children, match)
 				mt.Value = sb.String()
 			}else{
+				mt.DebugLine = sb.String() + "<- expecting " + match.Label + " here"
 				return mt
 			}
 		}

@@ -7,6 +7,7 @@ type MatchTree struct {
 	Value    string
 	Label    string
 	Children []MatchTree
+	DebugLine string
 }
 
 func (mt *MatchTree) toString() string {
@@ -34,5 +35,3 @@ func toStringRecursive(mt *MatchTree, sb *strings.Builder, levelPadding string){
 		toStringRecursive(&child, sb, levelPadding)
 	}
 }
-
-type Expression func(iter *Iterator) MatchTree
