@@ -35,3 +35,21 @@ func toStringRecursive(mt *MatchTree, sb *strings.Builder, levelPadding string){
 		toStringRecursive(&child, sb, levelPadding)
 	}
 }
+
+func validMatchTree(value string, children []MatchTree) MatchTree {
+	return MatchTree{
+		isValid:   true,
+		Value:     value,
+		Label:     "",
+		Children:  children,
+		DebugLine: "",
+	}
+}
+
+func invalidMatchTree(value string, debugline string) MatchTree {
+	mt := MatchTree{}
+	mt.isValid = false
+	mt.Value = value
+	mt.DebugLine = debugline
+	return mt
+}

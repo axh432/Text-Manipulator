@@ -6,65 +6,133 @@ import (
 )
 
 func TestSequenceOfCharacters(t *testing.T) {
+
 	t.Run("when given an exact string of characters this expression should return true", func(t *testing.T) {
-		stringToMatch := "1234567890qwertyuiop[]asdfghjkl;'\\zxcvbnm`,./!@£$%^&*()_+{}|:?><~"
+		iter := CreateIterator("1234567890qwertyuiop[]asdfghjkl;'\\zxcvbnm`,./!@£$%^&*()_+{}|:?><~")
 		exp := SequenceOfCharacters("1234567890qwertyuiop[]asdfghjkl;'\\zxcvbnm`,./!@£$%^&*()_+{}|:?><~")
-		matchResult := Match(stringToMatch, exp)
-		require.True(t, matchResult.isValid)
-		require.Equal(t, stringToMatch, matchResult.Value)
+		matchResult := MatchIter(&iter, exp)
+		expected := MatchTree{
+			isValid:   true,
+			Value:     "1234567890qwertyuiop[]asdfghjkl;'\\zxcvbnm`,./!@£$%^&*()_+{}|:?><~",
+			Label:     "",
+			Children:  nil,
+			DebugLine: "",
+		}
+
+		require.Equal(t, expected, matchResult)
+		require.Equal(t, 65, iter.index)
 	})
 
 	t.Run("when given a string of characters that differs in the beginning return false", func(t *testing.T) {
-		stringToMatch := "a"
+		iter := CreateIterator("a")
 		exp := SequenceOfCharacters("b")
-		matchResult := Match(stringToMatch, exp)
-		require.False(t, matchResult.isValid)
-		require.Equal(t, "", matchResult.Value)
+		matchResult := MatchIter(&iter, exp)
+		expected := MatchTree{
+			isValid:   false,
+			Value:     "",
+			Label:     "",
+			Children:  nil,
+			DebugLine: "SequenceOfCharacters:[b], NoMatch: 'a' does not match the sequence",
+		}
+
+		require.Equal(t, expected, matchResult)
+		require.Equal(t, 0, iter.index)
 	})
 
 	t.Run("when given a string of characters that differs in the end return false", func(t *testing.T) {
-		stringToMatch := "ab"
+		iter := CreateIterator("ab")
 		exp := SequenceOfCharacters("ac")
-		matchResult := Match(stringToMatch, exp)
-		require.False(t, matchResult.isValid)
-		require.Equal(t, "a", matchResult.Value)
+		matchResult := MatchIter(&iter, exp)
+		expected := MatchTree{
+			isValid:   false,
+			Value:     "",
+			Label:     "",
+			Children:  nil,
+			DebugLine: "SequenceOfCharacters:[ac], NoMatch: 'ab' does not match the sequence",
+		}
+
+		require.Equal(t, expected, matchResult)
+		require.Equal(t, 0, iter.index)
 	})
 
 	t.Run("when given a string of characters that differs in the middle return false", func(t *testing.T) {
-		stringToMatch := "abc"
+		iter := CreateIterator("abc")
 		exp := SequenceOfCharacters("adc")
-		matchResult := Match(stringToMatch, exp)
-		require.False(t, matchResult.isValid)
-		require.Equal(t, "a", matchResult.Value)
+		matchResult := MatchIter(&iter, exp)
+		expected := MatchTree{
+			isValid:   false,
+			Value:     "",
+			Label:     "",
+			Children:  nil,
+			DebugLine: "SequenceOfCharacters:[adc], NoMatch: 'ab' does not match the sequence",
+		}
+
+		require.Equal(t, expected, matchResult)
+		require.Equal(t, 0, iter.index)
 	})
 
 	t.Run("when given a string of characters that is longer than the sequence return true", func(t *testing.T) {
-		stringToMatch := "abcdefg"
+		iter := CreateIterator("abcdefg")
 		exp := SequenceOfCharacters("abc")
-		matchResult := Match(stringToMatch, exp)
-		require.True(t, matchResult.isValid)
-		require.Equal(t, "abc", matchResult.Value)
+		matchResult := MatchIter(&iter, exp)
+		expected := MatchTree{
+			isValid:   true,
+			Value:     "abc",
+			Label:     "",
+			Children:  nil,
+			DebugLine: "",
+		}
+
+		require.Equal(t, expected, matchResult)
+		require.Equal(t, 3, iter.index)
 	})
 
 	t.Run("when given a string of characters that is shorter than the sequence return false", func(t *testing.T) {
-		stringToMatch := "ab"
+		iter := CreateIterator("ab")
 		exp := SequenceOfCharacters("abc")
-		matchResult := Match(stringToMatch, exp)
-		require.False(t, matchResult.isValid)
-		require.Equal(t, "ab", matchResult.Value)
+		matchResult := MatchIter(&iter, exp)
+		expected := MatchTree{
+			isValid:   false,
+			Value:     "",
+			Label:     "",
+			Children:  nil,
+			DebugLine: "SequenceOfCharacters:[abc], NoMatch:reached end of string before finished",
+		}
+
+		require.Equal(t, expected, matchResult)
+		require.Equal(t, 0, iter.index)
 	})
 
 	t.Run("when given an empty string return false", func(t *testing.T) {
+		iter := CreateIterator("")
 		exp := SequenceOfCharacters("abc")
-		matchResult := Match("", exp)
-		require.False(t, matchResult.isValid)
-		require.Equal(t, "", matchResult.Value)
+		matchResult := MatchIter(&iter, exp)
+		expected := MatchTree{
+			isValid:   false,
+			Value:     "",
+			Label:     "",
+			Children:  nil,
+			DebugLine: "SequenceOfCharacters:[abc], NoMatch:reached end of string before finished",
+		}
+
+		require.Equal(t, expected, matchResult)
+		require.Equal(t, 0, iter.index)
 	})
 
+	//this is more of a guard against misuse
 	t.Run("when given an empty sequence return false", func(t *testing.T) {
+		iter := CreateIterator("a")
 		exp := SequenceOfCharacters("")
-		matchResult := Match("a", exp)
-		require.False(t, matchResult.isValid)
-		require.Equal(t, "", matchResult.Value)
+		matchResult := MatchIter(&iter, exp)
+		expected := MatchTree{
+			isValid:   false,
+			Value:     "",
+			Label:     "",
+			Children:  nil,
+			DebugLine: "SequenceOfCharacters:[], NoMatch:sequence of characters is empty",
+		}
+
+		require.Equal(t, expected, matchResult)
+		require.Equal(t, 0, iter.index)
 	})
 }

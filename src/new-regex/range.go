@@ -1,53 +1,51 @@
 package new_regex
 
 import (
+	"fmt"
 	"strings"
 )
 
 func Range(exp Expression, min int, max int) Expression {
 	return func(iter *Iterator) MatchTree {
-		mt := MatchTree{}
-		mt.Label = "Range"
-		consecutiveCount(iter, exp, &mt)
-		createValue(&mt)
-		count := len(mt.Children)
+
+		startingIndex := iter.GetIndex()
+		matches := collectConsecutiveMatches(iter, exp)
+		count := len(matches)
 
 		if countAboveMax(count, max){
-			mt.isValid = false
-			mt.DebugLine = mt.Value + " <- there are more than the max value of " + string(max)
-			return mt
+			iter.Reset(startingIndex) //always reset the iterator because this might be the child of a set.
+			return invalidMatchTree("", fmt.Sprintf("Range:[%d:%d], NoMatch:number of subexpressions greater than max", min, max))
 		}
 
 		if countBelowMin(count, min){
-			mt.isValid = false
-			mt.DebugLine = mt.Value + " <- there are less than the min value of " + string(min)
-			return mt
+			iter.Reset(startingIndex) //always reset the iterator because this might be the child of a set.
+			return invalidMatchTree("", fmt.Sprintf("Range:[%d:%d], NoMatch:number of subexpressions less than min", min, max))
 		}
 
-		mt.isValid = true
-		return mt
+		return validMatchTree(createValue(matches), matches)
 	}
 }
 
-func createValue(mt *MatchTree){
+func createValue(matches []MatchTree) string {
 	sb := strings.Builder{}
-	for _, child := range mt.Children {
+	for _, child := range matches {
 		sb.WriteString(child.Value)
 	}
-	mt.Value = sb.String()
+	return sb.String()
 }
 
-func consecutiveCount(iter *Iterator, exp Expression, mt *MatchTree) {
+//here we assume that any expression that fails resets the iterator. This is very important.
+func collectConsecutiveMatches(iter *Iterator, exp Expression) []MatchTree {
+	matches := []MatchTree{}
 	for iter.HasNext() {
-		startingIndex := iter.GetIndex()
 		match := exp(iter)
 		if match.isValid{
-			mt.Children = append(mt.Children, match) //I think children need to be pointers
+			matches = append(matches, match) //I think children need to be pointers
 		}else{
-			iter.Reset(startingIndex) //I think this needs to be tested
 			break
 		}
 	}
+	return matches
 }
 
 func countAboveMax(count, max int) bool {

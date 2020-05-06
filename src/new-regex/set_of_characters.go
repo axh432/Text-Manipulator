@@ -2,20 +2,19 @@ package new_regex
 
 func SetOfCharacters(characters string) Expression {
 	return func(iter *Iterator) MatchTree {
-		mt := MatchTree{}
 		if !iter.HasNext() {
-			mt.DebugLine = "SetOfCharacters:[" + characters + "], NoMatch:reached end of string before finished"
-			return mt
+			return invalidMatchTree("", "SetOfCharacters:[" + characters + "], NoMatch:reached end of string before finished")
 		}
+
+		startingIndex := iter.index
 		nextRune := iter.Next()
 		for _, char := range characters {
 			if char == nextRune {
-				mt.isValid = true
-				mt.Value = string(nextRune)
-				return mt
+				return validMatchTree(string(nextRune), nil)
 			}
 		}
-		mt.DebugLine = "SetOfCharacters:[" + characters + "], NoMatch: '" + string(nextRune) + "' not found in set"
-		return mt
+
+		iter.Reset(startingIndex)
+		return invalidMatchTree("", "SetOfCharacters:[" + characters + "], NoMatch: '" + string(nextRune) + "' not found in set")
 	}
 }

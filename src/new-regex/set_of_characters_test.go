@@ -8,43 +8,92 @@ import (
 func TestSetOfCharacters(t *testing.T) {
 	t.Run("when given a character that is in the set return true", func(t *testing.T) {
 		exp := SetOfCharacters("abc")
-		require.True(t, Match("a", exp).isValid)
-		require.Equal(t, "a", Match("a", exp).Value)
 
-		require.True(t, Match("b", exp).isValid)
-		require.Equal(t, "b", Match("b", exp).Value)
+		iterA := CreateIterator("a")
+		matchResultA := MatchIter(&iterA, exp)
+		expectedA := MatchTree{Value: "a", DebugLine: "", isValid: true}
+		require.Equal(t, matchResultA, expectedA)
+		require.Equal(t, 1, iterA.index)
 
-		require.True(t, Match("c", exp).isValid)
-		require.Equal(t, "c", Match("c", exp).Value)
+		iterB := CreateIterator("b")
+		matchResultB := MatchIter(&iterB, exp)
+		expectedB := MatchTree{Value: "b", DebugLine: "", isValid: true}
+		require.Equal(t, matchResultB, expectedB)
+		require.Equal(t, 1, iterB.index)
+
+		iterC := CreateIterator("c")
+		matchResultC := MatchIter(&iterC, exp)
+		expectedC := MatchTree{Value: "c", DebugLine: "", isValid: true}
+		require.Equal(t, matchResultC, expectedC)
+		require.Equal(t, 1, iterC.index)
 	})
 
 	t.Run("when given a character that is not in the set return false", func(t *testing.T) {
 		exp := SetOfCharacters("abc")
-		require.False(t, Match("d", exp).isValid)
-		require.Equal(t, "", Match("d", exp).Value)
+		iterD := CreateIterator("d")
+		matchResultD := MatchIter(&iterD, exp)
+		expectedD := MatchTree{
+			Value:     "",
+			DebugLine: "SetOfCharacters:[abc], NoMatch: 'd' not found in set",
+			isValid:   false,
+		}
+		require.Equal(t, matchResultD, expectedD)
+		require.Equal(t, 0, iterD.index)
 	})
 
 	t.Run("when given a string and the first character matches return true", func(t *testing.T) {
 		exp := SetOfCharacters("abc")
-		require.True(t, Match("athguy", exp).isValid)
-		require.Equal(t, "a", Match("athguy", exp).Value)
+
+		iterA := CreateIterator("athguy")
+		matchResult := MatchIter(&iterA, exp)
+		expected := MatchTree{
+			isValid: true,
+			Value: "a",
+			DebugLine: "",
+		}
+		require.Equal(t, expected, matchResult)
+		require.Equal(t, 1, iterA.index)
 	})
 
 	t.Run("when given a string and the first character does not match return false", func(t *testing.T) {
 		exp := SetOfCharacters("abc")
-		require.False(t, Match("xthguy", exp).isValid)
-		require.Equal(t, "", Match("xthguy", exp).Value)
+
+		iterX := CreateIterator("xthguy")
+		matchResult := MatchIter(&iterX, exp)
+		expected := MatchTree{
+			isValid: false,
+			Value: "",
+			DebugLine: "SetOfCharacters:[abc], NoMatch: 'x' not found in set",
+		}
+		require.Equal(t, expected, matchResult)
+		require.Equal(t, 0, iterX.index)
 	})
 
 	t.Run("when given an empty string return false", func(t *testing.T) {
 		exp := SetOfCharacters("abc")
-		require.False(t, Match("", exp).isValid)
-		require.Equal(t, "", Match("", exp).Value)
+
+		iter := CreateIterator("")
+		matchResult := MatchIter(&iter, exp)
+		expected := MatchTree{
+			isValid: false,
+			Value: "",
+			DebugLine: "SetOfCharacters:[abc], NoMatch:reached end of string before finished",
+		}
+		require.Equal(t, expected, matchResult)
+		require.Equal(t, 0, iter.index)
 	})
 
 	t.Run("when given an empty set return false", func(t *testing.T) {
 		exp := SetOfCharacters("")
-		require.False(t, Match("a", exp).isValid)
-		require.Equal(t, "", Match("a", exp).Value)
+
+		iter := CreateIterator("a")
+		matchResult := MatchIter(&iter, exp)
+		expected := MatchTree{
+			isValid: false,
+			Value: "",
+			DebugLine: "SetOfCharacters:[], NoMatch: 'a' not found in set",
+		}
+		require.Equal(t, expected, matchResult)
+		require.Equal(t, 0, iter.index)
 	})
 }
