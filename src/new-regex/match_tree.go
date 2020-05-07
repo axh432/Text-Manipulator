@@ -1,6 +1,9 @@
 package new_regex
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 type MatchTree struct {
 	isValid  bool
@@ -8,6 +11,30 @@ type MatchTree struct {
 	Label    string
 	Children []MatchTree
 	DebugLine string
+}
+
+type TypeCounter struct {
+	setOfCharsCount int
+	seqOfCharsCount int
+	sequenceCount int
+	setCount int
+	rangeCount int
+}
+
+func (mt *MatchTree) toMermaidDiagram() string {
+	counter := TypeCounter{}
+	definitions := strings.Builder{}
+	links := strings.Builder{}
+
+	links.WriteString("classDiagram")
+
+	toMermaidDiagramRecursive(mt, &counter, &links, &definitions)
+
+	return fmt.Sprintf("%s\n%s", links.String(), definitions.String())
+}
+
+func toMermaidDiagramRecursive(mt *MatchTree, counter *TypeCounter, links *strings.Builder, definitions *strings.Builder){
+	//name := fmt.Sprintf("Node%d", counter.sequenceCount)
 }
 
 func (mt *MatchTree) toString() string {

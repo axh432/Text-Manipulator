@@ -1,31 +1,36 @@
 package new_regex
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 func Sequence(expressions ...Expression) Expression {
 	return func(iter *Iterator) MatchTree {
-		mt := MatchTree{}
-
 		if len(expressions) == 0 {
-			mt.DebugLine = "sequence of expressions is empty"
-			return mt
+			return invalidMatchTree("", "Sequence:[], NoMatch:number of subexpressions is zero")
 		}
 
 		sb := strings.Builder{}
+		matches := []MatchTree{}
+
+		startingIndex := iter.index
 
 		for _, exp := range expressions {
 			match := exp(iter)
 			if match.isValid {
 				sb.WriteString(match.Value)
-				mt.Children = append(mt.Children, match)
-				mt.Value = sb.String()
+				matches = append(matches, match)
 			}else{
-				mt.DebugLine = sb.String() + "<- expecting " + match.Label + " here"
-				return mt
+				iter.Reset(startingIndex)
+				debugLine := "Sequence:[], NoMatch:string does not match given subexpression"
+				if match.Label != "" {
+					 debugLine = fmt.Sprintf("Sequence:[], NoMatch:string does not match given subexpression: %s", match.Label)
+				}
+				return invalidMatchTree("", debugLine)
 			}
 		}
 
-		mt.isValid = true
-		return mt
+		return validMatchTree(sb.String(), matches)
 	}
 }
