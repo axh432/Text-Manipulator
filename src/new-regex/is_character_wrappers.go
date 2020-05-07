@@ -4,28 +4,30 @@ import (
 	"unicode"
 )
 
-//Todo: needs to be refactored in the light of 'type' and 'debugline' e.c.t
-
 type IsCharacterFunction func(r rune) bool
 
 var (
-	Whitespace  = createSetFromIsCharacterFunction(unicode.IsSpace)
-	Number      = createSetFromIsCharacterFunction(unicode.IsNumber)
-	Letter      = createSetFromIsCharacterFunction(unicode.IsLetter)
-	Punctuation = createSetFromIsCharacterFunction(unicode.IsPunct)
-	Symbol      = createSetFromIsCharacterFunction(unicode.IsSymbol)
+	Whitespace  = createSetFromIsCharacterFunction(unicode.IsSpace, "Whitespace")
+	Number      = createSetFromIsCharacterFunction(unicode.IsNumber, "Number")
+	Letter      = createSetFromIsCharacterFunction(unicode.IsLetter, "Letter")
+	Punctuation = createSetFromIsCharacterFunction(unicode.IsPunct, "Punctuation")
+	Symbol      = createSetFromIsCharacterFunction(unicode.IsSymbol, "Symbol")
 )
 
-func createSetFromIsCharacterFunction(isCharacterFunction IsCharacterFunction) Expression {
+func createSetFromIsCharacterFunction(isCharacterFunction IsCharacterFunction, charSetName string) Expression {
 	return func(iter *Iterator) MatchTree {
-		mt := MatchTree{}
-		if iter.HasNext() {
-			nextRune := iter.Next()
-			if isCharacterFunction(nextRune) {
-				mt.IsValid = true
-				mt.Value = string(nextRune)
-			}
+		startingIndex := iter.index
+
+		if !iter.HasNext() {
+			return invalidMatchTree("", "SetOfCharacters", "SetOfCharacters:[" + charSetName + "], NoMatch:reached end of string before finished")
 		}
-		return mt
+
+		nextRune := iter.Next()
+		if isCharacterFunction(nextRune) {
+			return validMatchTree(string(nextRune), "SetOfCharacters", nil)
+		}
+
+		iter.Reset(startingIndex)
+		return invalidMatchTree("", "SetOfCharacters", "SetOfCharacters:[" + charSetName + "], NoMatch: '" + string(nextRune) + "' not found in set")
 	}
 }

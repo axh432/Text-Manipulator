@@ -1,6 +1,5 @@
 package new_regex
 
-
 import (
 	"github.com/stretchr/testify/require"
 	"testing"
