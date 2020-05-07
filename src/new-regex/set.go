@@ -2,22 +2,20 @@ package new_regex
 
 func Set(expressions ...Expression) Expression {
 	return func(iter *Iterator) MatchTree {
+		if len(expressions) == 0 {
+			return invalidMatchTree("", "Set", "Set:[], NoMatch:number of subexpressions is zero")
+		}
+
 		startingIndex := iter.GetIndex()
-		mt := MatchTree{}
-		mt.Label = "Set"
-		mt.DebugLine = "expecting either: "
 		for _, exp := range expressions {
 			match := exp(iter)
 			if match.IsValid {
-				mt.DebugLine = ""
-				mt.IsValid = true
-				mt.Value = match.Value
-				mt.Children = append(mt.Children, match)
-			} else {
-				mt.DebugLine += match.Label + " or "
+				return validMatchTree(match.Value, "Set", []MatchTree{match})
+			}else{
 				iter.Reset(startingIndex)
 			}
 		}
-		return mt
+		iter.Reset(startingIndex)
+		return invalidMatchTree("", "Set", "Set:[], NoMatch:string does not match the given subexpressions")
 	}
 }
