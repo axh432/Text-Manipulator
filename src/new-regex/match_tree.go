@@ -14,23 +14,32 @@ type MatchTree struct {
 	DebugLine string
 }
 
+type MatchTreeVisitor func(mt *MatchTree)
+
 type TypeCounter struct {
 	setOfCharsCount int
 	seqOfCharsCount int
 	sequenceCount   int
 	setCount        int
 	rangeCount      int
-	labelCount		int
+	labelCount      int
 }
 
-func (mt *MatchTree) toMermaidDiagram() string {
+func (mt *MatchTree) acceptVisitor(visit MatchTreeVisitor) {
+	visit(mt)
+	for _, child := range mt.Children {
+		child.acceptVisitor(visit)
+	}
+}
+
+func (mt MatchTree) toMermaidDiagram() string {
 	counter := TypeCounter{}
 	definitions := strings.Builder{}
 	links := strings.Builder{}
 
 	links.WriteString("classDiagram")
 
-	toMermaidDiagramRecursive(mt, "", &counter, &links, &definitions)
+	toMermaidDiagramRecursive(&mt, "", &counter, &links, &definitions)
 
 	return fmt.Sprintf("%s\n%s", links.String(), definitions.String())
 }
@@ -116,7 +125,7 @@ func validMatchTree(value string, Type string, children []MatchTree) MatchTree {
 	return MatchTree{
 		IsValid:   true,
 		Value:     value,
-		Type:	   Type,
+		Type:      Type,
 		Label:     "",
 		Children:  children,
 		DebugLine: "",

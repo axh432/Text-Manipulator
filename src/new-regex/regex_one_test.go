@@ -1,12 +1,12 @@
 package new_regex
 
 import (
+	"fmt"
 	"github.com/stretchr/testify/require"
 	"testing"
 )
 
 /* These are the regex tutorials found at: https://regexone.com/ implemented in new-regex */
-
 
 func TestRegexOne(t *testing.T) {
 
@@ -22,6 +22,26 @@ func TestRegexOne(t *testing.T) {
 
 	t.Run("Lesson 1.5: the 123s", func(t *testing.T) {
 		//write a pattern that matches only the numbers.
+		integer := Label(Range(Number, 1, -1), "integer")
+		notANumber := Set(Whitespace, Letter, Punctuation, Symbol)
+		notInteger := Range(notANumber, 1, -1)
+
+		numbers := []string{}
+		visitor := func(mt *MatchTree) {
+			if mt.Label != "" {
+				numbers = append(numbers, mt.Value)
+			}
+		}
+
+		exp := Range(Set(notInteger, integer), 0, -1)
+
+		iter := CreateIterator("var g = 123;")
+
+		result := MatchIter(&iter, exp)
+
+		result.acceptVisitor(visitor)
+
+		fmt.Printf("%v", numbers)
 
 		/*
 		abc123xyz
