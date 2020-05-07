@@ -11,19 +11,19 @@ func TestSetOfCharacters(t *testing.T) {
 
 		iterA := CreateIterator("a")
 		matchResultA := MatchIter(&iterA, exp)
-		expectedA := MatchTree{Value: "a", DebugLine: "", isValid: true}
+		expectedA := MatchTree{Value: "a", DebugLine: "", Type: "SetOfCharacters", IsValid: true}
 		require.Equal(t, matchResultA, expectedA)
 		require.Equal(t, 1, iterA.index)
 
 		iterB := CreateIterator("b")
 		matchResultB := MatchIter(&iterB, exp)
-		expectedB := MatchTree{Value: "b", DebugLine: "", isValid: true}
+		expectedB := MatchTree{Value: "b", DebugLine: "", Type: "SetOfCharacters", IsValid: true}
 		require.Equal(t, matchResultB, expectedB)
 		require.Equal(t, 1, iterB.index)
 
 		iterC := CreateIterator("c")
 		matchResultC := MatchIter(&iterC, exp)
-		expectedC := MatchTree{Value: "c", DebugLine: "", isValid: true}
+		expectedC := MatchTree{Value: "c", DebugLine: "", Type: "SetOfCharacters", IsValid: true}
 		require.Equal(t, matchResultC, expectedC)
 		require.Equal(t, 1, iterC.index)
 	})
@@ -34,8 +34,9 @@ func TestSetOfCharacters(t *testing.T) {
 		matchResultD := MatchIter(&iterD, exp)
 		expectedD := MatchTree{
 			Value:     "",
+			Type: "SetOfCharacters",
 			DebugLine: "SetOfCharacters:[abc], NoMatch: 'd' not found in set",
-			isValid:   false,
+			IsValid:   false,
 		}
 		require.Equal(t, matchResultD, expectedD)
 		require.Equal(t, 0, iterD.index)
@@ -47,8 +48,9 @@ func TestSetOfCharacters(t *testing.T) {
 		iterA := CreateIterator("athguy")
 		matchResult := MatchIter(&iterA, exp)
 		expected := MatchTree{
-			isValid: true,
-			Value: "a",
+			IsValid:   true,
+			Type: "SetOfCharacters",
+			Value:     "a",
 			DebugLine: "",
 		}
 		require.Equal(t, expected, matchResult)
@@ -61,8 +63,9 @@ func TestSetOfCharacters(t *testing.T) {
 		iterX := CreateIterator("xthguy")
 		matchResult := MatchIter(&iterX, exp)
 		expected := MatchTree{
-			isValid: false,
-			Value: "",
+			IsValid:   false,
+			Type: "SetOfCharacters",
+			Value:     "",
 			DebugLine: "SetOfCharacters:[abc], NoMatch: 'x' not found in set",
 		}
 		require.Equal(t, expected, matchResult)
@@ -75,8 +78,9 @@ func TestSetOfCharacters(t *testing.T) {
 		iter := CreateIterator("")
 		matchResult := MatchIter(&iter, exp)
 		expected := MatchTree{
-			isValid: false,
-			Value: "",
+			IsValid:   false,
+			Type: "SetOfCharacters",
+			Value:     "",
 			DebugLine: "SetOfCharacters:[abc], NoMatch:reached end of string before finished",
 		}
 		require.Equal(t, expected, matchResult)
@@ -89,8 +93,9 @@ func TestSetOfCharacters(t *testing.T) {
 		iter := CreateIterator("a")
 		matchResult := MatchIter(&iter, exp)
 		expected := MatchTree{
-			isValid: false,
-			Value: "",
+			IsValid:   false,
+			Type: "SetOfCharacters",
+			Value:     "",
 			DebugLine: "SetOfCharacters:[], NoMatch: 'a' not found in set",
 		}
 		require.Equal(t, expected, matchResult)

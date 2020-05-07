@@ -15,9 +15,9 @@ func TestRegexOne(t *testing.T) {
 
 		exp := Range(SetOfCharacters("abcdefg"), 1, 7)
 
-		require.Equal(t, true, Match("abcdefg", exp).isValid)
-		require.Equal(t, true, Match("abcde", exp).isValid)
-		require.Equal(t, true, Match("abc", exp).isValid)
+		require.Equal(t, true, Match("abcdefg", exp).IsValid)
+		require.Equal(t, true, Match("abcde", exp).IsValid)
+		require.Equal(t, true, Match("abc", exp).IsValid)
 	})
 
 	t.Run("Lesson 1.5: the 123s", func(t *testing.T) {

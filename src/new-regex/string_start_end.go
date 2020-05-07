@@ -2,7 +2,7 @@ package new_regex
 
 func StringStart(iter *Iterator) MatchTree {
 	return MatchTree{
-		isValid:  !iter.HasPrev(),
+		IsValid:  !iter.HasPrev(),
 		Value:    "",
 		Label:    "StringStart",
 		Children: nil,
@@ -11,7 +11,7 @@ func StringStart(iter *Iterator) MatchTree {
 
 func StringEnd(iter *Iterator) MatchTree {
 	return MatchTree{
-		isValid:  !iter.HasNext(),
+		IsValid:  !iter.HasNext(),
 		Value:    "",
 		Label:    "StringEnd",
 		Children: nil,

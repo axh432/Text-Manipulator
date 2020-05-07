@@ -14,15 +14,15 @@ func Range(exp Expression, min int, max int) Expression {
 
 		if countAboveMax(count, max){
 			iter.Reset(startingIndex) //always reset the iterator because this might be the child of a set.
-			return invalidMatchTree("", fmt.Sprintf("Range:[%d:%d], NoMatch:number of subexpressions greater than max", min, max))
+			return invalidMatchTree("", "Range", fmt.Sprintf("Range:[%d:%d], NoMatch:number of subexpressions greater than max", min, max))
 		}
 
 		if countBelowMin(count, min){
 			iter.Reset(startingIndex) //always reset the iterator because this might be the child of a set.
-			return invalidMatchTree("", fmt.Sprintf("Range:[%d:%d], NoMatch:number of subexpressions less than min", min, max))
+			return invalidMatchTree("", "Range", fmt.Sprintf("Range:[%d:%d], NoMatch:number of subexpressions less than min", min, max))
 		}
 
-		return validMatchTree(createValue(matches), matches)
+		return validMatchTree(createValue(matches), "Range", matches)
 	}
 }
 
@@ -39,7 +39,7 @@ func collectConsecutiveMatches(iter *Iterator, exp Expression) []MatchTree {
 	matches := []MatchTree{}
 	for iter.HasNext() {
 		match := exp(iter)
-		if match.isValid{
+		if match.IsValid {
 			matches = append(matches, match) //I think children need to be pointers
 		}else{
 			break

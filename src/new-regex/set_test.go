@@ -14,13 +14,13 @@ func TestSet(t *testing.T) {
 
 		exp := Set(a, b, c)
 
-		require.True(t, Match("a", exp).isValid)
+		require.True(t, Match("a", exp).IsValid)
 		require.Equal(t, "a", Match("a", exp).Value)
 
-		require.True(t, Match("b", exp).isValid)
+		require.True(t, Match("b", exp).IsValid)
 		require.Equal(t, "b", Match("b", exp).Value)
 
-		require.True(t, Match("c", exp).isValid)
+		require.True(t, Match("c", exp).IsValid)
 		require.Equal(t, "c", Match("c", exp).Value)
 	})
 
@@ -30,7 +30,7 @@ func TestSet(t *testing.T) {
 		c := SetOfCharacters("c")
 
 		exp := Set(a, b, c)
-		require.False(t, Match("d", exp).isValid)
+		require.False(t, Match("d", exp).IsValid)
 		require.Equal(t, "", Match("d", exp).Value)
 	})
 
@@ -40,7 +40,7 @@ func TestSet(t *testing.T) {
 		c := SetOfCharacters("c")
 
 		exp := Set(a, b, c)
-		require.True(t, Match("athguy", exp).isValid)
+		require.True(t, Match("athguy", exp).IsValid)
 		require.Equal(t, "a", Match("athguy", exp).Value)
 	})
 
@@ -50,7 +50,7 @@ func TestSet(t *testing.T) {
 		c := SetOfCharacters("c")
 
 		exp := Set(a, b, c)
-		require.False(t, Match("xthguy", exp).isValid)
+		require.False(t, Match("xthguy", exp).IsValid)
 		require.Equal(t, "", Match("xthguy", exp).Value)
 	})
 
@@ -60,13 +60,13 @@ func TestSet(t *testing.T) {
 		c := SetOfCharacters("c")
 
 		exp := Set(a, b, c)
-		require.False(t, Match("", exp).isValid)
+		require.False(t, Match("", exp).IsValid)
 		require.Equal(t, "", Match("", exp).Value)
 	})
 
 	t.Run("when given an empty set return false", func(t *testing.T) {
 		exp := Set()
-		require.False(t, Match("a", exp).isValid)
+		require.False(t, Match("a", exp).IsValid)
 		require.Equal(t, "", Match("a", exp).Value)
 	})
 

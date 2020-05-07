@@ -6,19 +6,21 @@ import (
 )
 
 type MatchTree struct {
-	isValid  bool
-	Value    string
-	Label    string
-	Children []MatchTree
+	IsValid   bool
+	Value     string
+	Type      string
+	Label     string
+	Children  []MatchTree
 	DebugLine string
 }
 
 type TypeCounter struct {
 	setOfCharsCount int
 	seqOfCharsCount int
-	sequenceCount int
-	setCount int
-	rangeCount int
+	sequenceCount   int
+	setCount        int
+	rangeCount      int
+	labelCount		int
 }
 
 func (mt *MatchTree) toMermaidDiagram() string {
@@ -33,9 +35,36 @@ func (mt *MatchTree) toMermaidDiagram() string {
 	return fmt.Sprintf("%s\n%s", links.String(), definitions.String())
 }
 
-func toMermaidDiagramRecursive(mt *MatchTree, parentName string, counter *TypeCounter, links *strings.Builder, definitions *strings.Builder){
-	name := fmt.Sprintf("Node%d", counter.sequenceCount)
-	counter.sequenceCount++
+func toMermaidDiagramRecursive(mt *MatchTree, parentName string, counter *TypeCounter, links *strings.Builder, definitions *strings.Builder) {
+
+	var name string
+
+	switch mt.Type {
+	case "SequenceOfCharacters":
+		name = fmt.Sprintf("%s_%d", mt.Type, counter.seqOfCharsCount)
+		counter.seqOfCharsCount++
+		break
+	case "SetOfCharacters":
+		name = fmt.Sprintf("%s_%d", mt.Type, counter.setOfCharsCount)
+		counter.setOfCharsCount++
+		break
+	case "Set":
+		name = fmt.Sprintf("%s_%d", mt.Type, counter.setCount)
+		counter.setCount++
+		break
+	case "Range":
+		name = fmt.Sprintf("%s_%d", mt.Type, counter.rangeCount)
+		counter.rangeCount++
+		break
+	case "Sequence":
+		name = fmt.Sprintf("%s_%d", mt.Type, counter.sequenceCount)
+		counter.sequenceCount++
+		break
+	case "Label":
+		name = fmt.Sprintf("%s_%d", mt.Type, counter.labelCount)
+		counter.labelCount++
+		break
+	}
 
 	if parentName != "" {
 		links.WriteString(fmt.Sprintf("\n\t%s-->%s", parentName, name))
@@ -44,12 +73,13 @@ func toMermaidDiagramRecursive(mt *MatchTree, parentName string, counter *TypeCo
 	classDef := `
 class %s {
 	IsValid: %t
-	Value: %s
+	Value: "%s"
+	Type: %s
 	Label: %s
 	DebugLine: %s
 }`
 
-	definitions.WriteString(fmt.Sprintf(classDef, name, mt.isValid, mt.Value, mt.Label, mt.DebugLine))
+	definitions.WriteString(fmt.Sprintf(classDef, name, mt.IsValid, mt.Value, mt.Type, mt.Label, mt.DebugLine))
 
 	for _, child := range mt.Children {
 		toMermaidDiagramRecursive(&child, name, counter, links, definitions)
@@ -62,7 +92,7 @@ func (mt *MatchTree) toString() string {
 	return sb.String()
 }
 
-func toStringRecursive(mt *MatchTree, sb *strings.Builder, levelPadding string){
+func toStringRecursive(mt *MatchTree, sb *strings.Builder, levelPadding string) {
 	levelPadding = levelPadding + "\t\t"
 	sb.WriteString(levelPadding)
 	sb.WriteString("|")
@@ -82,20 +112,24 @@ func toStringRecursive(mt *MatchTree, sb *strings.Builder, levelPadding string){
 	}
 }
 
-func validMatchTree(value string, children []MatchTree) MatchTree {
+func validMatchTree(value string, Type string, children []MatchTree) MatchTree {
 	return MatchTree{
-		isValid:   true,
+		IsValid:   true,
 		Value:     value,
+		Type:	   Type,
 		Label:     "",
 		Children:  children,
 		DebugLine: "",
 	}
 }
 
-func invalidMatchTree(value string, debugline string) MatchTree {
-	mt := MatchTree{}
-	mt.isValid = false
-	mt.Value = value
-	mt.DebugLine = debugline
-	return mt
+func invalidMatchTree(value string, Type string, debugLine string) MatchTree {
+	return MatchTree{
+		IsValid:   false,
+		Value:     value,
+		Type:      Type,
+		Label:     "",
+		Children:  nil,
+		DebugLine: debugLine,
+	}
 }

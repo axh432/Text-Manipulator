@@ -8,9 +8,9 @@ func Set(expressions ...Expression) Expression {
 		mt.DebugLine = "expecting either: "
 		for _, exp := range expressions {
 			match := exp(iter)
-			if match.isValid {
+			if match.IsValid {
 				mt.DebugLine = ""
-				mt.isValid = true
+				mt.IsValid = true
 				mt.Value = match.Value
 				mt.Children = append(mt.Children, match)
 			} else {

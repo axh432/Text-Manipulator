@@ -18,13 +18,14 @@ func TestSequence(t *testing.T) {
 
 		matchResult := MatchIter(&iter, exp)
 		expected := MatchTree{
-			isValid:   true,
+			IsValid:   true,
 			Value:     "abc",
+			Type:	   "Sequence",
 			Label:     "",
-			Children:  []MatchTree{{isValid: true, Value: "a"},{isValid: true, Value: "b"},{isValid: true, Value: "c"}},
+			Children:  []MatchTree{{IsValid: true, Type:"SetOfCharacters", Value: "a"},{IsValid: true, Type:"SetOfCharacters", Value: "b"},{IsValid: true, Type:"SetOfCharacters", Value: "c"}},
 			DebugLine: "",
 		}
-		
+
 		require.Equal(t, expected, matchResult)
 		require.Equal(t, 3, iter.index)
 	})
@@ -39,8 +40,9 @@ func TestSequence(t *testing.T) {
 		exp := Sequence(a, b, c)
 		matchResult := MatchIter(&iter, exp)
 		expected := MatchTree{
-			isValid:   false,
+			IsValid:   false,
 			Value:     "",
+			Type:	   "Sequence",
 			Label:     "",
 			Children:  nil,
 			DebugLine: "Sequence:[], NoMatch:string does not match given subexpression",
@@ -60,8 +62,9 @@ func TestSequence(t *testing.T) {
 		exp := Sequence(a, b, c)
 		matchResult := MatchIter(&iter, exp)
 		expected := MatchTree{
-			isValid:   false,
+			IsValid:   false,
 			Value:     "",
+			Type:	   "Sequence",
 			Label:     "",
 			Children:  nil,
 			DebugLine: "Sequence:[], NoMatch:string does not match given subexpression",
@@ -81,8 +84,9 @@ func TestSequence(t *testing.T) {
 		exp := Sequence(a, b, c)
 		matchResult := MatchIter(&iter, exp)
 		expected := MatchTree{
-			isValid:   false,
+			IsValid:   false,
 			Value:     "",
+			Type:	   "Sequence",
 			Label:     "",
 			Children:  nil,
 			DebugLine: "Sequence:[], NoMatch:string does not match given subexpression",
@@ -102,10 +106,11 @@ func TestSequence(t *testing.T) {
 		exp := Sequence(a, b, c)
 		matchResult := MatchIter(&iter, exp)
 		expected := MatchTree{
-			isValid:   true,
+			IsValid:   true,
 			Value:     "abc",
+			Type:	   "Sequence",
 			Label:     "",
-			Children:  []MatchTree{{isValid: true, Value: "a"},{isValid: true, Value: "b"},{isValid: true, Value: "c"}},
+			Children:  []MatchTree{{IsValid: true, Type:"SetOfCharacters", Value: "a"},{IsValid: true, Type:"SetOfCharacters", Value: "b"},{IsValid: true, Type:"SetOfCharacters", Value: "c"}},
 			DebugLine: "",
 		}
 
@@ -124,8 +129,9 @@ func TestSequence(t *testing.T) {
 		exp := Sequence(a, b, c)
 		matchResult := MatchIter(&iter, exp)
 		expected := MatchTree{
-			isValid:   false,
+			IsValid:   false,
 			Value:     "",
+			Type:	   "Sequence",
 			Label:     "",
 			Children:  nil,
 			DebugLine: "Sequence:[], NoMatch:string does not match given subexpression",
@@ -145,8 +151,9 @@ func TestSequence(t *testing.T) {
 		exp := Sequence(a, b, c)
 		matchResult := MatchIter(&iter, exp)
 		expected := MatchTree{
-			isValid:   false,
+			IsValid:   false,
 			Value:     "",
+			Type:	   "Sequence",
 			Label:     "",
 			Children:  nil,
 			DebugLine: "Sequence:[], NoMatch:string does not match given subexpression",
@@ -161,8 +168,9 @@ func TestSequence(t *testing.T) {
 		exp := Sequence()
 		matchResult := MatchIter(&iter, exp)
 		expected := MatchTree{
-			isValid:   false,
+			IsValid:   false,
 			Value:     "",
+			Type:	   "Sequence",
 			Label:     "",
 			Children:  nil,
 			DebugLine: "Sequence:[], NoMatch:number of subexpressions is zero",

@@ -12,8 +12,9 @@ func TestSequenceOfCharacters(t *testing.T) {
 		exp := SequenceOfCharacters("1234567890qwertyuiop[]asdfghjkl;'\\zxcvbnm`,./!@£$%^&*()_+{}|:?><~")
 		matchResult := MatchIter(&iter, exp)
 		expected := MatchTree{
-			isValid:   true,
+			IsValid:   true,
 			Value:     "1234567890qwertyuiop[]asdfghjkl;'\\zxcvbnm`,./!@£$%^&*()_+{}|:?><~",
+			Type:	   "SequenceOfCharacters",
 			Label:     "",
 			Children:  nil,
 			DebugLine: "",
@@ -28,8 +29,9 @@ func TestSequenceOfCharacters(t *testing.T) {
 		exp := SequenceOfCharacters("b")
 		matchResult := MatchIter(&iter, exp)
 		expected := MatchTree{
-			isValid:   false,
+			IsValid:   false,
 			Value:     "",
+			Type:	   "SequenceOfCharacters",
 			Label:     "",
 			Children:  nil,
 			DebugLine: "SequenceOfCharacters:[b], NoMatch: 'a' does not match the sequence",
@@ -44,8 +46,9 @@ func TestSequenceOfCharacters(t *testing.T) {
 		exp := SequenceOfCharacters("ac")
 		matchResult := MatchIter(&iter, exp)
 		expected := MatchTree{
-			isValid:   false,
+			IsValid:   false,
 			Value:     "",
+			Type:	   "SequenceOfCharacters",
 			Label:     "",
 			Children:  nil,
 			DebugLine: "SequenceOfCharacters:[ac], NoMatch: 'ab' does not match the sequence",
@@ -60,8 +63,9 @@ func TestSequenceOfCharacters(t *testing.T) {
 		exp := SequenceOfCharacters("adc")
 		matchResult := MatchIter(&iter, exp)
 		expected := MatchTree{
-			isValid:   false,
+			IsValid:   false,
 			Value:     "",
+			Type:	   "SequenceOfCharacters",
 			Label:     "",
 			Children:  nil,
 			DebugLine: "SequenceOfCharacters:[adc], NoMatch: 'ab' does not match the sequence",
@@ -76,8 +80,9 @@ func TestSequenceOfCharacters(t *testing.T) {
 		exp := SequenceOfCharacters("abc")
 		matchResult := MatchIter(&iter, exp)
 		expected := MatchTree{
-			isValid:   true,
+			IsValid:   true,
 			Value:     "abc",
+			Type:	   "SequenceOfCharacters",
 			Label:     "",
 			Children:  nil,
 			DebugLine: "",
@@ -92,8 +97,9 @@ func TestSequenceOfCharacters(t *testing.T) {
 		exp := SequenceOfCharacters("abc")
 		matchResult := MatchIter(&iter, exp)
 		expected := MatchTree{
-			isValid:   false,
+			IsValid:   false,
 			Value:     "",
+			Type:	   "SequenceOfCharacters",
 			Label:     "",
 			Children:  nil,
 			DebugLine: "SequenceOfCharacters:[abc], NoMatch:reached end of string before finished",
@@ -108,8 +114,9 @@ func TestSequenceOfCharacters(t *testing.T) {
 		exp := SequenceOfCharacters("abc")
 		matchResult := MatchIter(&iter, exp)
 		expected := MatchTree{
-			isValid:   false,
+			IsValid:   false,
 			Value:     "",
+			Type:	   "SequenceOfCharacters",
 			Label:     "",
 			Children:  nil,
 			DebugLine: "SequenceOfCharacters:[abc], NoMatch:reached end of string before finished",
@@ -125,8 +132,9 @@ func TestSequenceOfCharacters(t *testing.T) {
 		exp := SequenceOfCharacters("")
 		matchResult := MatchIter(&iter, exp)
 		expected := MatchTree{
-			isValid:   false,
+			IsValid:   false,
 			Value:     "",
+			Type:	   "SequenceOfCharacters",
 			Label:     "",
 			Children:  nil,
 			DebugLine: "SequenceOfCharacters:[], NoMatch:sequence of characters is empty",

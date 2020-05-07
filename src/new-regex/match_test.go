@@ -10,37 +10,37 @@ func Test_match(t *testing.T) {
 
 	t.Run("whitespace no new line", func(t *testing.T) {
 		whitespaceNoNewLine := SetOfCharacters(" \t")
-		require.True(t, Match(" ", whitespaceNoNewLine).isValid)
-		require.True(t, Match("\t", whitespaceNoNewLine).isValid)
-		require.False(t, Match("\n", whitespaceNoNewLine).isValid)
-		require.False(t, Match("", whitespaceNoNewLine).isValid)
-		require.False(t, Match("a", whitespaceNoNewLine).isValid)
+		require.True(t, Match(" ", whitespaceNoNewLine).IsValid)
+		require.True(t, Match("\t", whitespaceNoNewLine).IsValid)
+		require.False(t, Match("\n", whitespaceNoNewLine).IsValid)
+		require.False(t, Match("", whitespaceNoNewLine).IsValid)
+		require.False(t, Match("a", whitespaceNoNewLine).IsValid)
 	})
 
 	t.Run("optional whitespace no new line", func(t *testing.T) {
 		whitespaceNoNewLine := SetOfCharacters(" \t")
 		optionalWhitespaceNoNewLine := Range(whitespaceNoNewLine, 0, 1)
-		require.True(t, Match(" ", Sequence(optionalWhitespaceNoNewLine, StringEnd)).isValid)
-		require.True(t, Match("\t", Sequence(optionalWhitespaceNoNewLine, StringEnd)).isValid)
-		require.True(t, Match("", Sequence(optionalWhitespaceNoNewLine, StringEnd)).isValid)
+		require.True(t, Match(" ", Sequence(optionalWhitespaceNoNewLine, StringEnd)).IsValid)
+		require.True(t, Match("\t", Sequence(optionalWhitespaceNoNewLine, StringEnd)).IsValid)
+		require.True(t, Match("", Sequence(optionalWhitespaceNoNewLine, StringEnd)).IsValid)
 
-		require.False(t, Match("\n", Sequence(optionalWhitespaceNoNewLine, StringEnd)).isValid)
-		require.False(t, Match("a", Sequence(optionalWhitespaceNoNewLine, StringEnd)).isValid)
+		require.False(t, Match("\n", Sequence(optionalWhitespaceNoNewLine, StringEnd)).IsValid)
+		require.False(t, Match("a", Sequence(optionalWhitespaceNoNewLine, StringEnd)).IsValid)
 	})
 
 	t.Run("java name", func(t *testing.T) {
 		underscore := SetOfCharacters("_")
 		name := Sequence(Set(Letter, underscore), Range(Set(Letter, Number, underscore), 0, -1))
 
-		require.True(t, Match("m1", Sequence(name, StringEnd)).isValid)
-		require.True(t, Match("myvariable", Sequence(name, StringEnd)).isValid)
-		require.True(t, Match("myVariable", Sequence(name, StringEnd)).isValid)
-		require.True(t, Match("my_variable", Sequence(name, StringEnd)).isValid)
-		require.True(t, Match("my_variable_2", Sequence(name, StringEnd)).isValid)
-		require.True(t, Match("_variable", Sequence(name, StringEnd)).isValid)
+		require.True(t, Match("m1", Sequence(name, StringEnd)).IsValid)
+		require.True(t, Match("myvariable", Sequence(name, StringEnd)).IsValid)
+		require.True(t, Match("myVariable", Sequence(name, StringEnd)).IsValid)
+		require.True(t, Match("my_variable", Sequence(name, StringEnd)).IsValid)
+		require.True(t, Match("my_variable_2", Sequence(name, StringEnd)).IsValid)
+		require.True(t, Match("_variable", Sequence(name, StringEnd)).IsValid)
 
-		require.False(t, Match("1variable", Sequence(name, StringEnd)).isValid)
-		require.False(t, Match("my-variable-cool", Sequence(name, StringEnd)).isValid)
+		require.False(t, Match("1variable", Sequence(name, StringEnd)).IsValid)
+		require.False(t, Match("my-variable-cool", Sequence(name, StringEnd)).IsValid)
 		require.Equal(t, "my", Match("my-variable-cool", Sequence(name, StringEnd)).Value)
 	})
 
@@ -54,16 +54,16 @@ func Test_match(t *testing.T) {
 
 		functionKeywords := Sequence(Set(public, private, protected), Range(static, 0, 1))
 
-		require.True(t, Match("public", functionKeywords).isValid)
-		require.True(t, Match("private", functionKeywords).isValid)
-		require.True(t, Match("protected", functionKeywords).isValid)
-		require.True(t, Match("public static", functionKeywords).isValid)
-		require.True(t, Match("private static", functionKeywords).isValid)
-		require.True(t, Match("protected static", functionKeywords).isValid)
+		require.True(t, Match("public", functionKeywords).IsValid)
+		require.True(t, Match("private", functionKeywords).IsValid)
+		require.True(t, Match("protected", functionKeywords).IsValid)
+		require.True(t, Match("public static", functionKeywords).IsValid)
+		require.True(t, Match("private static", functionKeywords).IsValid)
+		require.True(t, Match("protected static", functionKeywords).IsValid)
 
-		require.False(t, Match("static public", functionKeywords).isValid)
-		require.False(t, Match("something static", functionKeywords).isValid)
-		require.False(t, Match("publicstatic", Sequence(functionKeywords, StringEnd)).isValid)
+		require.False(t, Match("static public", functionKeywords).IsValid)
+		require.False(t, Match("something static", functionKeywords).IsValid)
+		require.False(t, Match("publicstatic", Sequence(functionKeywords, StringEnd)).IsValid)
 	})
 
 	t.Run("java function parameters", func(t *testing.T) {
@@ -75,12 +75,12 @@ func Test_match(t *testing.T) {
 
 		parameter := Sequence(typeName, Range(whitespaceNoNewLine, 1, -1), variableName)
 
-		require.True(t, Match("int count", parameter).isValid)
-		require.True(t, Match("int 	count", parameter).isValid)
-		require.True(t, Match("String name", parameter).isValid)
+		require.True(t, Match("int count", parameter).IsValid)
+		require.True(t, Match("int 	count", parameter).IsValid)
+		require.True(t, Match("String name", parameter).IsValid)
 
-		require.False(t, Match("String", parameter).isValid)
-		require.False(t, Match("String ", parameter).isValid)
+		require.False(t, Match("String", parameter).IsValid)
+		require.False(t, Match("String ", parameter).IsValid)
 	})
 
 	t.Run("java list of function parameters", func(t *testing.T) {
@@ -104,9 +104,9 @@ func Test_match(t *testing.T) {
 
 		fmt.Println(result.DebugLine)
 
-		require.True(t, Match("int width, int length", listOfParameters).isValid)
-		require.True(t, Match("int width, int length, string name", listOfParameters).isValid)
-		//require.True(t, Match("int width  , int length", listOfParameters).isValid)
+		require.True(t, Match("int width, int length", listOfParameters).IsValid)
+		require.True(t, Match("int width, int length, string name", listOfParameters).IsValid)
+		//require.True(t, Match("int width  , int length", listOfParameters).IsValid)
 
 	})
 
@@ -149,7 +149,7 @@ func Test_match(t *testing.T) {
 		result := Match(stringToMatch, functionSignature)
 
 		println(result.toString())
-		require.True(t, result.isValid)
+		require.True(t, result.IsValid)
 	})*/
 
 }

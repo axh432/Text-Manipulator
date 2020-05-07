@@ -4,6 +4,8 @@ import (
 	"unicode"
 )
 
+//Todo: needs to be refactored in the light of 'type' and 'debugline' e.c.t
+
 type IsCharacterFunction func(r rune) bool
 
 var (
@@ -20,7 +22,7 @@ func createSetFromIsCharacterFunction(isCharacterFunction IsCharacterFunction) E
 		if iter.HasNext() {
 			nextRune := iter.Next()
 			if isCharacterFunction(nextRune) {
-				mt.isValid = true
+				mt.IsValid = true
 				mt.Value = string(nextRune)
 			}
 		}

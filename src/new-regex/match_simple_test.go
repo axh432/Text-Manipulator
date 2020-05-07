@@ -20,7 +20,7 @@ func Test_match_simple(t *testing.T) {
 		result := Match(stringToMatch, exp)
 
 		println(result.toString())
-		require.True(t, result.isValid)
+		require.True(t, result.IsValid)
 		require.Equal(t, stringToMatch, result.Value)
 
 	})
@@ -38,7 +38,7 @@ func Test_match_simple(t *testing.T) {
 		result := Match(stringToMatch, exp)
 
 		println(result.toString())
-		require.True(t, result.isValid)
+		require.True(t, result.IsValid)
 		require.Equal(t, stringToMatch, result.Value)
 	})
 }

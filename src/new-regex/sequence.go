@@ -8,7 +8,7 @@ import (
 func Sequence(expressions ...Expression) Expression {
 	return func(iter *Iterator) MatchTree {
 		if len(expressions) == 0 {
-			return invalidMatchTree("", "Sequence:[], NoMatch:number of subexpressions is zero")
+			return invalidMatchTree("", "Sequence", "Sequence:[], NoMatch:number of subexpressions is zero")
 		}
 
 		sb := strings.Builder{}
@@ -18,7 +18,7 @@ func Sequence(expressions ...Expression) Expression {
 
 		for _, exp := range expressions {
 			match := exp(iter)
-			if match.isValid {
+			if match.IsValid {
 				sb.WriteString(match.Value)
 				matches = append(matches, match)
 			}else{
@@ -27,10 +27,10 @@ func Sequence(expressions ...Expression) Expression {
 				if match.Label != "" {
 					 debugLine = fmt.Sprintf("Sequence:[], NoMatch:string does not match given subexpression: %s", match.Label)
 				}
-				return invalidMatchTree("", debugLine)
+				return invalidMatchTree("", "Sequence", debugLine)
 			}
 		}
 
-		return validMatchTree(sb.String(), matches)
+		return validMatchTree(sb.String(), "Sequence", matches)
 	}
 }
