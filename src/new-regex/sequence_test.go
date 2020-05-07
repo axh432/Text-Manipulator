@@ -24,7 +24,7 @@ func TestSequence(t *testing.T) {
 			Children:  []MatchTree{{isValid: true, Value: "a"},{isValid: true, Value: "b"},{isValid: true, Value: "c"}},
 			DebugLine: "",
 		}
-
+		
 		require.Equal(t, expected, matchResult)
 		require.Equal(t, 3, iter.index)
 	})

@@ -28,13 +28,32 @@ func (mt *MatchTree) toMermaidDiagram() string {
 
 	links.WriteString("classDiagram")
 
-	toMermaidDiagramRecursive(mt, &counter, &links, &definitions)
+	toMermaidDiagramRecursive(mt, "", &counter, &links, &definitions)
 
 	return fmt.Sprintf("%s\n%s", links.String(), definitions.String())
 }
 
-func toMermaidDiagramRecursive(mt *MatchTree, counter *TypeCounter, links *strings.Builder, definitions *strings.Builder){
-	//name := fmt.Sprintf("Node%d", counter.sequenceCount)
+func toMermaidDiagramRecursive(mt *MatchTree, parentName string, counter *TypeCounter, links *strings.Builder, definitions *strings.Builder){
+	name := fmt.Sprintf("Node%d", counter.sequenceCount)
+	counter.sequenceCount++
+
+	if parentName != "" {
+		links.WriteString(fmt.Sprintf("\n\t%s-->%s", parentName, name))
+	}
+
+	classDef := `
+class %s {
+	IsValid: %t
+	Value: %s
+	Label: %s
+	DebugLine: %s
+}`
+
+	definitions.WriteString(fmt.Sprintf(classDef, name, mt.isValid, mt.Value, mt.Label, mt.DebugLine))
+
+	for _, child := range mt.Children {
+		toMermaidDiagramRecursive(&child, name, counter, links, definitions)
+	}
 }
 
 func (mt *MatchTree) toString() string {
