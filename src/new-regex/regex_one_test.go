@@ -1,7 +1,6 @@
 package new_regex
 
 import (
-	"fmt"
 	"github.com/stretchr/testify/require"
 	"testing"
 )
@@ -15,16 +14,19 @@ func TestRegexOne(t *testing.T) {
 
 		exp := Range(SetOfCharacters("abcdefg"), 1, 7)
 
-		require.Equal(t, true, Match("abcdefg", exp).IsValid)
-		require.Equal(t, true, Match("abcde", exp).IsValid)
-		require.Equal(t, true, Match("abc", exp).IsValid)
+		require.True(t, Match("abcdefg", exp).IsValid)
+		require.True(t, Match("abcde", exp).IsValid)
+		require.True(t, Match("abc", exp).IsValid)
 	})
 
 	t.Run("Lesson 1.5: the 123s", func(t *testing.T) {
 		//write a pattern that matches only the numbers.
+
 		integer := Label(Range(Number, 1, -1), "integer")
 		notANumber := Set(Whitespace, Letter, Punctuation, Symbol)
 		notInteger := Range(notANumber, 1, -1)
+
+		exp := Range(Set(notInteger, integer), 0, -1)
 
 		numbers := []string{}
 		visitor := func(mt *MatchTree) {
@@ -33,52 +35,54 @@ func TestRegexOne(t *testing.T) {
 			}
 		}
 
-		exp := Range(Set(notInteger, integer), 0, -1)
+		result1 := Match("var g = 123;", exp)
+		result2 := Match(`define "123"`, exp)
+		result3 := Match(`var g = 123;`, exp)
 
-		iter := CreateIterator("var g = 123;")
+		result1.acceptVisitor(visitor)
+		result2.acceptVisitor(visitor)
+		result3.acceptVisitor(visitor)
 
-		result := MatchIter(&iter, exp)
-
-		result.acceptVisitor(visitor)
-
-		fmt.Printf("%v", numbers)
-
-		/*
-		abc123xyz
-		define "123"
-		var g = 123;
-		*/
-
+		require.Equal(t, []string{"123", "123", "123"}, numbers)
 	})
 
 	t.Run("Lesson 2: the 'any' character", func(t *testing.T) {
 		//write a pattern the first three but not the last
-		/*
-			Match	cat.
-			Match	896.
-			Match	?=+.
-			Skip	abc1
-		*/
+
+		any := Set(Whitespace, Number, Letter, Punctuation, Symbol)
+		dot := SetOfCharacters(".")
+		exp := Sequence(any, any, any, dot)
+
+		require.True(t, Match("cat.", exp).IsValid)
+		require.True(t, Match("896.", exp).IsValid)
+		require.True(t, Match("?=+.", exp).IsValid)
+		require.False(t, Match("abc1", exp).IsValid)
 	})
 
 	t.Run("Lesson 3: Matching specific characters", func(t *testing.T) {
-		/*
-		Match	can	To be completed
-		Match	man	To be completed
-		Match	fan	To be completed
-		Skip	dan	To be completed
-		Skip	ran	To be completed
-		Skip	pan
-		*/
+		//match the specific characters: cmf at the beginning of the string
+
+		cmf := SetOfCharacters("cmf")
+		an := SequenceOfCharacters("an")
+		exp := Sequence(cmf, an)
+
+		require.True(t, Match("can", exp).IsValid)
+		require.True(t, Match("man", exp).IsValid)
+		require.True(t, Match("fan", exp).IsValid)
+		require.False(t, Match("dan", exp).IsValid)
+		require.False(t, Match("ran", exp).IsValid)
+		require.False(t, Match("pan", exp).IsValid)
+
 	})
 
+	//lesson 4 the 'not' expression has not been implemented yet
 	t.Run("Lesson 4: Excluding specific characters", func(t *testing.T) {
 		/*
-			Match	can	To be completed
-			Match	man	To be completed
-			Match	fan	To be completed
-			Skip	dan	To be completed
-			Skip	ran	To be completed
+			Match	can
+			Match	man
+			Match	fan
+			Skip	dan
+			Skip	ran
 			Skip	pan
 		*/
 	})
@@ -86,55 +90,72 @@ func TestRegexOne(t *testing.T) {
 	//lesson 5 character ranges is not supported atm
 	t.Run("Lesson 5: Character ranges", func(t *testing.T) {
 		/*
-		Match	Ana	To be completed
-		Match	Bob	To be completed
-		Match	Cpc	To be completed
-		Skip	aax	To be completed
-		Skip	bby	To be completed
+		Match	Ana
+		Match	Bob
+		Match	Cpc
+		Skip	aax
+		Skip	bby
 		Skip	ccz
 		*/
 	})
 
 	t.Run("Lesson 6: Catching some zzz's", func(t *testing.T) {
 		//use ranges to match the strings that need to be matched.
-		/*
-		Match	wazzzzzup	To be completed
-		Match	wazzzup	To be completed
-		Skip	wazup
-		*/
+		wa := SequenceOfCharacters("wa")
+		z := SetOfCharacters("z")
+		up := SequenceOfCharacters("up")
+		exp := Sequence(wa, Range(z, 3, 5), up)
+
+		require.True(t, Match("wazzzzzup", exp).IsValid)
+		require.True(t, Match("wazzzup", exp).IsValid)
+		require.False(t, Match("wazup", exp).IsValid)
 	})
 
 	t.Run("Lesson 7: Matching Repeated Characters", func(t *testing.T) {
-		/*
-		Match	aaaabcc	To be completed
-		Match	aabbbbc	To be completed
-		Match	aacc	To be completed
-		Skip	a
-		*/
+		a := Range(SetOfCharacters("a"), 2, 4)
+		b := Range(SetOfCharacters("b"), 0, 4)
+		c := Range(SetOfCharacters("c"), 1, 2)
+		exp := Sequence(a, b, c)
+
+		require.True(t, Match("aaaabcc", exp).IsValid)
+		require.True(t, Match("aabbbbc", exp).IsValid)
+		require.True(t, Match("aacc", exp).IsValid)
+		require.False(t, Match("a", exp).IsValid)
 	})
 
 	t.Run("Lesson 8: Characters optional", func(t *testing.T) {
+		integer := Range(Number, 1, -1)
+		space := SetOfCharacters(" ")
+		file := SequenceOfCharacters("file")
+		files := SequenceOfCharacters("files")
+		found := SequenceOfCharacters("found?")
+		exp := Sequence(integer, space, Set(file, files), space, found)
+
+		require.True(t, Match("1 file found?", exp).IsValid)
+		require.True(t, Match("2 files found?", exp).IsValid)
+		require.True(t, Match("24 files found?", exp).IsValid)
+		require.False(t, Match("No files found.", exp).IsValid)
 		/*
-		Match	1 file found?	To be completed
-		Match	2 files found?	To be completed
-		Match	24 files found?	To be completed
+		Match	1 file found?
+		Match	2 files found?
+		Match	24 files found?
 		Skip	No files found.
 		*/
 	})
 
 	t.Run("Lesson 9: All this whitespace", func(t *testing.T) {
 		/*
-			Match	1.   abc	To be completed
-			Match	2.	abc	To be completed
-			Match	3.           abc	To be completed
+			Match	1.   abc
+			Match	2.	abc
+			Match	3.           abc
 			Skip	4.abc
 		*/
 	})
 
 	t.Run("Lesson 10: Starting and ending", func(t *testing.T) {
 		/*
-			Match	Mission: successful	To be completed
-			Skip	Last Mission: unsuccessful	To be completed
+			Match	Mission: successful
+			Skip	Last Mission: unsuccessful
 			Skip	Next Mission: successful upon capture of target
 		*/
 	})
@@ -142,8 +163,8 @@ func TestRegexOne(t *testing.T) {
 	t.Run("Lesson 11: Match groups", func(t *testing.T) {
 		//capture only the file name and not the extension
 		/*
-			Capture	file_record_transcript.pdf	file_record_transcript	To be completed
-			Capture	file_07241999.pdf	file_07241999	To be completed
+			Capture	file_record_transcript.pdf	file_record_transcript
+			Capture	file_07241999.pdf	file_07241999
 			Skip	testfile_fake.pdf.tmp
 		*/
 	})
@@ -151,8 +172,8 @@ func TestRegexOne(t *testing.T) {
 	t.Run("Lesson 12: Nested groups", func(t *testing.T) {
 		//capture the full date and the year of the date
 		/*
-		Capture	Jan 1987	Jan 1987 1987	To be completed
-		Capture	May 1969	May 1969 1969	To be completed
+		Capture	Jan 1987	Jan 1987 1987
+		Capture	May 1969	May 1969 1969
 		Capture	Aug 2011	Aug 2011 2011
 		*/
 	})
@@ -160,25 +181,25 @@ func TestRegexOne(t *testing.T) {
 	t.Run("Lesson 13: More group work", func(t *testing.T) {
 		//capture the individual dimensions
 		/*
-		Capture	1280x720	1280 720	To be completed
-		Capture	1920x1600	1920 1600	To be completed
+		Capture	1280x720	1280 720
+		Capture	1920x1600	1920 1600
 		Capture	1024x768	1024 768
 		*/
 	})
 
 	t.Run("Lesson 14: It's all conditional", func(t *testing.T) {
 		/*
-			Match	I love cats	To be completed
-			Match	I love dogs	To be completed
-			Skip	I love logs	To be completed
+			Match	I love cats
+			Match	I love dogs
+			Skip	I love logs
 			Skip	I love cogs
 		*/
 	})
 
 	t.Run("Lesson 15: Other special characters", func(t *testing.T) {
 		/*
-			Match	The quick brown fox jumps over the lazy dog.	To be completed
-			Match	There were 614 instances of students getting 90.0% or above.	To be completed
+			Match	The quick brown fox jumps over the lazy dog.
+			Match	There were 614 instances of students getting 90.0% or above.
 			Match	The FCC had to censor the network for saying &$#*@!.
 		*/
 	})
