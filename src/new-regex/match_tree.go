@@ -132,13 +132,13 @@ func validMatchTree(value string, Type string, children []MatchTree) MatchTree {
 	}
 }
 
-func invalidMatchTree(value string, Type string, debugLine string) MatchTree {
+func invalidMatchTree(value, Type string, children []MatchTree, debugLine string) MatchTree {
 	return MatchTree{
 		IsValid:   false,
 		Value:     value,
 		Type:      Type,
 		Label:     "",
-		Children:  nil,
+		Children:  children,
 		DebugLine: debugLine,
 	}
 }

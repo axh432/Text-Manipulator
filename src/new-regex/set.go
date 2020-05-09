@@ -3,7 +3,7 @@ package new_regex
 func Set(expressions ...Expression) Expression {
 	return func(iter *Iterator) MatchTree {
 		if len(expressions) == 0 {
-			return invalidMatchTree("", "Set", "Set:[], NoMatch:number of subexpressions is zero")
+			return invalidMatchTree("", "Set", nil, "Set:[], NoMatch:number of subexpressions is zero")
 		}
 
 		startingIndex := iter.GetIndex()
@@ -16,6 +16,6 @@ func Set(expressions ...Expression) Expression {
 			}
 		}
 		iter.Reset(startingIndex)
-		return invalidMatchTree("", "Set", "Set:[], NoMatch:string does not match the given subexpressions")
+		return invalidMatchTree("", "Set", nil, "Set:[], NoMatch:string does not match the given subexpressions")
 	}
 }

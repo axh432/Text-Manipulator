@@ -19,7 +19,7 @@ func createSetFromIsCharacterFunction(isCharacterFunction IsCharacterFunction, c
 		startingIndex := iter.index
 
 		if !iter.HasNext() {
-			return invalidMatchTree("", "SetOfCharacters", "SetOfCharacters:[" + charSetName + "], NoMatch:reached end of string before finished")
+			return invalidMatchTree("", "SetOfCharacters", nil, "SetOfCharacters:["+charSetName+"], NoMatch:reached end of string before finished")
 		}
 
 		nextRune := iter.Next()
@@ -28,6 +28,6 @@ func createSetFromIsCharacterFunction(isCharacterFunction IsCharacterFunction, c
 		}
 
 		iter.Reset(startingIndex)
-		return invalidMatchTree("", "SetOfCharacters", "SetOfCharacters:[" + charSetName + "], NoMatch: '" + string(nextRune) + "' not found in set")
+		return invalidMatchTree("", "SetOfCharacters", nil, "SetOfCharacters:["+charSetName+"], NoMatch: '"+string(nextRune)+"' not found in set")
 	}
 }

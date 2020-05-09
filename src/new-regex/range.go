@@ -14,12 +14,12 @@ func Range(exp Expression, min int, max int) Expression {
 
 		if countAboveMax(count, max){
 			iter.Reset(startingIndex) //always reset the iterator because this might be the child of a set.
-			return invalidMatchTree("", "Range", fmt.Sprintf("Range:[%d:%d], NoMatch:number of subexpressions greater than max", min, max))
+			return invalidMatchTree("", "Range", matches, fmt.Sprintf("Range:[%d:%d], NoMatch:number of subexpressions greater than max", min, max))
 		}
 
 		if countBelowMin(count, min){
 			iter.Reset(startingIndex) //always reset the iterator because this might be the child of a set.
-			return invalidMatchTree("", "Range", fmt.Sprintf("Range:[%d:%d], NoMatch:number of subexpressions less than min", min, max))
+			return invalidMatchTree("", "Range", matches, fmt.Sprintf("Range:[%d:%d], NoMatch:number of subexpressions less than min", min, max))
 		}
 
 		return validMatchTree(createValue(matches), "Range", matches)

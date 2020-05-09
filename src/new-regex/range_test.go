@@ -149,7 +149,7 @@ func greaterThanRange(t *testing.T, subExp Expression, Type string){
 		Value:     "",
 		Type:	   "Range",
 		Label:     "",
-		Children:  nil,
+		Children:  []MatchTree{{IsValid: true, Type: Type,  Value: "a"},{IsValid: true, Type: Type,  Value: "a"}},
 		DebugLine: "Range:[1:1], NoMatch:number of subexpressions greater than max",
 	}
 	require.Equal(t, expected, matchResult)
@@ -167,7 +167,7 @@ func lessThanRange(t *testing.T, subExp Expression, Type string){
 		Value:     "",
 		Type:	   "Range",
 		Label:     "",
-		Children:  nil,
+		Children:  []MatchTree{{IsValid: true, Type: Type,  Value: "a"}},
 		DebugLine: "Range:[2:3], NoMatch:number of subexpressions less than min",
 	}
 	require.Equal(t, expected, matchResult)
@@ -185,7 +185,7 @@ func emptyStringMinOfOne(t *testing.T, subExp Expression, Type string) {
 		Value:     "",
 		Type:	   "Range",
 		Label:     "",
-		Children:  nil,
+		Children:  []MatchTree{},
 		DebugLine: "Range:[1:2], NoMatch:number of subexpressions less than min",
 	}
 	require.Equal(t, expected, matchResult)

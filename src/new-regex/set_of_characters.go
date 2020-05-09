@@ -3,7 +3,7 @@ package new_regex
 func SetOfCharacters(characters string) Expression {
 	return func(iter *Iterator) MatchTree {
 		if !iter.HasNext() {
-			return invalidMatchTree("", "SetOfCharacters","SetOfCharacters:[" + characters + "], NoMatch:reached end of string before finished")
+			return invalidMatchTree("", "SetOfCharacters", nil, "SetOfCharacters:["+characters+"], NoMatch:reached end of string before finished")
 		}
 
 		startingIndex := iter.index
@@ -15,6 +15,6 @@ func SetOfCharacters(characters string) Expression {
 		}
 
 		iter.Reset(startingIndex)
-		return invalidMatchTree("", "SetOfCharacters", "SetOfCharacters:[" + characters + "], NoMatch: '" + string(nextRune) + "' not found in set")
+		return invalidMatchTree("", "SetOfCharacters", nil, "SetOfCharacters:["+characters+"], NoMatch: '"+string(nextRune)+"' not found in set")
 	}
 }
