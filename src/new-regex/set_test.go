@@ -156,4 +156,27 @@ func TestSet(t *testing.T) {
 		require.Equal(t, 0, iter.index)
 	})
 
+	t.Run("when given two expressions that match return the one with the longest value", func(t *testing.T) {
+		the := SequenceOfCharacters("the")
+		there := SequenceOfCharacters("there")
+
+		exp := Set(the, there)
+
+		iter := CreateIterator("there")
+
+		matchResult := MatchIter(&iter, exp)
+		expected := MatchTree{
+			IsValid:   true,
+			Value:     "there",
+			Type:	   "Set",
+			Label:     "",
+			Children:  []MatchTree{
+				{IsValid: true, Type:"SequenceOfCharacters", Value: "there"},
+			},
+			DebugLine: "",
+		}
+		require.Equal(t, expected, matchResult)
+		require.Equal(t, 5, iter.index)
+	})
+
 }

@@ -10,8 +10,6 @@ import (
 func TestRegexOne(t *testing.T) {
 
 	t.Run("Lesson 1: the ABCs", func(t *testing.T) {
-		//pattern that matches the following strings.
-
 		exp := Range(SetOfCharacters("abcdefg"), 1, 7)
 
 		require.True(t, Match("abcdefg", exp).IsValid)
@@ -47,8 +45,6 @@ func TestRegexOne(t *testing.T) {
 	})
 
 	t.Run("Lesson 2: the 'any' character", func(t *testing.T) {
-		//write a pattern the first three but not the last
-
 		any := Set(Whitespace, Number, Letter, Punctuation, Symbol)
 		dot := SetOfCharacters(".")
 		exp := Sequence(any, any, any, dot)
@@ -75,8 +71,9 @@ func TestRegexOne(t *testing.T) {
 
 	})
 
-	//lesson 4 the 'not' expression has not been implemented yet
-	//Todo: Do we need a 'not' expression?
+	//Todo: Do we need a 'not' expression? When would you need it?
+	//Todo: the main problem with it is that I dont know if the iterator is supposed to move on or not.
+	//Todo: maybe 'not' can only exist for sets of characters?
 	t.Run("Lesson 4: Excluding specific characters", func(t *testing.T) {
 		/*
 			Match	can
@@ -88,8 +85,8 @@ func TestRegexOne(t *testing.T) {
 		*/
 	})
 
-	//lesson 5 character ranges are supported atm
-	//Todo: do we need a special type of SetOfCharacters e.g. RangedSetOfCharacters(A, m), RangedSetOfCharacters(0, 6)?
+	//lesson 5 character ranges are not supported atm
+	//Todo: do we need a special type of SetOfCharacters e.g. RangedSetOfCharacters('A', 'm'), RangedSetOfCharacters('0', '6')?
 	//Todo: in regex our 'Ranges' are called 'Repetitions' maybe we should rename them?
 	t.Run("Lesson 5: Character ranges", func(t *testing.T) {
 		/*
@@ -126,14 +123,13 @@ func TestRegexOne(t *testing.T) {
 		require.False(t, Match("a", exp).IsValid)
 	})
 
-	//Todo: Do we need a 'who matches the most characters' in Set?
 	t.Run("Lesson 8: Characters optional", func(t *testing.T) {
 		integer := Range(Number, 1, -1)
 		space := SetOfCharacters(" ")
 		file := SequenceOfCharacters("file")
 		files := SequenceOfCharacters("files")
 		found := SequenceOfCharacters("found?")
-		exp := Sequence(integer, space, Set(files, file), space, found)
+		exp := Sequence(integer, space, Set(file, files), space, found)
 
 		require.True(t, Match("1 file found?", exp).IsValid)
 		require.True(t, Match("2 files found?", exp).IsValid)
@@ -150,6 +146,7 @@ func TestRegexOne(t *testing.T) {
 		require.False(t, Match("abc", exp).IsValid)
 	})
 
+	//Todo: do we need the start or end of string markers?
 	t.Run("Lesson 10: Starting and ending", func(t *testing.T) {
 		exp := SequenceOfCharacters("Mission: successful")
 
@@ -160,10 +157,11 @@ func TestRegexOne(t *testing.T) {
 
 	t.Run("Lesson 11: Match groups", func(t *testing.T) {
 		//capture only the file name and not the extension
-		//Todo: here is a good case for having a not expression or an end of string?
 		filename := Label(Range(Set(Letter, Number, SetOfCharacters("_")), 1, -1), "filename")
 		fileExtension := SequenceOfCharacters(".pdf")
-		exp := Sequence(filename, fileExtension)
+		nonSpace := Set(Letter, Number, Punctuation, Symbol) //you can build not expressions
+		noCharactersAfter := Range(nonSpace, 0, 0) //custom string end expression
+		exp := Sequence(filename, fileExtension, noCharactersAfter)
 
 		filenames := []string{}
 		visitor := func(mt *MatchTree) {
@@ -174,17 +172,17 @@ func TestRegexOne(t *testing.T) {
 
 		result1 := Match("file_record_transcript.pdf", exp)
 		result2 := Match("file_07241999.pdf", exp)
-		//Skip	testfile_fake.pdf.tmp
-
-		result1.acceptVisitor(visitor)
-		result2.acceptVisitor(visitor)
+		result3 := Match("testfile_fake.pdf.tmp", exp)
 
 		require.True(t, result1.IsValid)
 		require.True(t, result2.IsValid)
+		require.False(t, result3.IsValid)
+
+		result1.acceptVisitor(visitor)
+		result2.acceptVisitor(visitor)
 		require.Equal(t, []string{"file_record_transcript", "file_07241999"}, filenames)
 	})
 
-	//Todo: I think we need to make it clear what character the failing node is trying to process
 	t.Run("Lesson 12: Nested groups", func(t *testing.T) {
 		//capture the full date and the year of the date
 		year := Label(Range(Number, 4, 4), "year")
@@ -263,7 +261,6 @@ func TestRegexOne(t *testing.T) {
 	})
 
 	//Todo: it is possible to go into an infinite loop if the Range of the word is set to min=0
-	//Todo: it is possible for the match to terminate early with 'valid' if percentage and integer are swapped as it matches int and then uses the point from the percentage as a fullstop
 	t.Run("Lesson 15: Other special characters", func(t *testing.T) {
 
 		word := Label(Range(Letter, 1, -1), "word")
@@ -273,7 +270,7 @@ func TestRegexOne(t *testing.T) {
 		percentage := Label(Sequence(decimal, SetOfCharacters("%")), "percentage")
 		fullStop := Label(SequenceOfCharacters("."), "fullstop")
 		expletive := Label(SequenceOfCharacters("&$#*@!"), "expletive")
-		sentence := Sequence(Range(Set(word, space, percentage, integer, expletive), 1, -1), fullStop)
+		sentence := Sequence(Range(Set(word, space, integer, percentage, expletive), 1, -1), fullStop)
 
 		require.True(t, Match("The quick brown fox jumps over the lazy dog.", sentence).IsValid)
 		require.True(t, Match("There were 614 instances of students getting 90.0% or above.", sentence).IsValid)
