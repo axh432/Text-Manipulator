@@ -268,7 +268,7 @@ func TestRegexOne(t *testing.T) {
 	//Todo: some sort of logging 
 	t.Run("Lesson 15: Other special characters", func(t *testing.T) {
 
-		word := Label(Range(Letter, 0, -1), "word")
+		word := Label(Range(Letter, 1, -1), "word")
 		space := SetOfCharacters(" ")
 		integer := Label(Range(Number, 1, -1), "integer")
 		decimal := Sequence(integer, SetOfCharacters("."), integer)
