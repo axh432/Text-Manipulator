@@ -19,7 +19,7 @@ func Test_match_simple(t *testing.T) {
 
 		result := Match(stringToMatch, exp)
 
-		println(result.toString())
+		println(result.toMermaidDiagram())
 		require.True(t, result.IsValid)
 		require.Equal(t, stringToMatch, result.Value)
 

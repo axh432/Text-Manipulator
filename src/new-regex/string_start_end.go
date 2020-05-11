@@ -1,19 +1,17 @@
 package new_regex
 
 func StringStart(iter *Iterator) MatchTree {
-	return MatchTree{
-		IsValid:  !iter.HasPrev(),
-		Value:    "",
-		Label:    "StringStart",
-		Children: nil,
+	if iter.index == 0 {
+		return validMatchTree("", "StringStart", nil)
+	}else{
+		return invalidMatchTree("", "StringStart", nil, "StringStart, NoMatch:this is not the start of the string")
 	}
 }
 
 func StringEnd(iter *Iterator) MatchTree {
-	return MatchTree{
-		IsValid:  !iter.HasNext(),
-		Value:    "",
-		Label:    "StringEnd",
-		Children: nil,
+	if iter.HasNext() {
+		return invalidMatchTree("", "StringEnd", nil, "StringEnd, NoMatch:this is not the end of the string")
+	}else{
+		return validMatchTree("", "StringEnd", nil)
 	}
 }

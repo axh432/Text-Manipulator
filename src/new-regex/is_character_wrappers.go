@@ -16,6 +16,7 @@ var (
 
 func createSetFromIsCharacterFunction(isCharacterFunction IsCharacterFunction, charSetName string) Expression {
 	return func(iter *Iterator) MatchTree {
+
 		startingIndex := iter.index
 
 		if !iter.HasNext() {

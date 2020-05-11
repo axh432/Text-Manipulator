@@ -7,7 +7,6 @@ import (
 
 func Range(exp Expression, min int, max int) Expression {
 	return func(iter *Iterator) MatchTree {
-
 		startingIndex := iter.GetIndex()
 		matches := collectConsecutiveMatches(iter, exp)
 		count := len(matches)

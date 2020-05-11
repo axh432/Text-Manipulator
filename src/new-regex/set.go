@@ -1,6 +1,8 @@
 package new_regex
 
-import "sort"
+import (
+	"sort"
+)
 
 func Set(expressions ...Expression) Expression {
 	return func(iter *Iterator) MatchTree {
@@ -23,7 +25,7 @@ func Set(expressions ...Expression) Expression {
 			sort.Slice(validMatches, func(p, q int) bool {
 				return len(validMatches[p].Value) > len(validMatches[q].Value) })
 
-			iter.Reset(startingIndex + len(validMatches[0].Value))
+			iter.Reset(startingIndex + len(validMatches[0].Value)) //Todo: if len(validMatches[0].Value) == 0 then parent will loop forever.
 
 			return validMatchTree(validMatches[0].Value, "Set", []MatchTree{validMatches[0]})
 		}
