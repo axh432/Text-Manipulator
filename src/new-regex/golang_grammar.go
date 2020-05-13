@@ -34,26 +34,20 @@ var (
 
 	packageDeclaration = Sequence(Package, whitespaceNoNewLineBlock, packageName)
 
-	parameter     = Label(Sequence(variableName, whitespaceNoNewLineBlock, typeName), "parameter")
+	parameter = Label(Sequence(variableName, whitespaceNoNewLineBlock, typeName), "parameter")
 
-	functionParametersList   = FunctionParameterList(openBracket, parameter, comma, closedBracket)
-	functionParametersSingle = Sequence(openBracket, optionalWhitespaceNoNewLineBlock, parameter, optionalWhitespaceNoNewLineBlock, closedBracket)
-	functionParametersEmpty  = Sequence(openBracket, optionalWhitespaceNoNewLineBlock, closedBracket)
+	functionParameters = FunctionParameterCodeBlock(openBracket, parameter, comma, closedBracket)
 
-	functionParameters = Set(functionParametersList, functionParametersSingle, functionParametersEmpty)
+	returnParametersNamed  = functionParameters
+	returnParametersSingle = returnType
+	returnParametersList   = FunctionParameterList(openBracket, returnType, comma, closedBracket)
 
-	returnParametersNamedList   = functionParametersList
-	returnParametersNamedSingle = functionParametersSingle
-	returnParametersSingle      = returnType
-	returnParametersList        = FunctionParameterList(openBracket, returnType, comma, closedBracket)
-
-	returnParameters         = Set(returnParametersSingle, returnParametersList, returnParametersNamedSingle, returnParametersNamedList)
+	returnParameters         = Set(returnParametersSingle, returnParametersList, returnParametersNamed)
 	optionalReturnParameters = Range(returnParameters, 0, 1)
 
 	functionSignature = Sequence(Func, whitespaceNoNewLineBlock, functionName, optionalWhitespaceNoNewLineBlock, functionParameters, optionalWhitespaceNoNewLineBlock, optionalReturnParameters)
 )
 
-//covers the patterns ABA, ABABA e.c.t
 func RepeatingList(listItem Expression, delimiter Expression) Expression {
 	return Sequence(Range(Sequence(listItem, delimiter), 1, -1), listItem)
 }
@@ -77,17 +71,16 @@ func BoundedMultiLineRepeatingList(start Expression, listItem Expression, delimi
 func SingleLineCodeBlock(start Expression, listItem Expression, delimiter Expression, end Expression) Expression {
 	list := BoundedSingleLineRepeatingList(start, listItem, delimiter, end)
 	single := Sequence(start, optionalWhitespaceNoNewLineBlock, listItem, optionalWhitespaceNoNewLineBlock, end)
-	empty  := Sequence(start, optionalWhitespaceNoNewLineBlock, end)
+	empty := Sequence(start, optionalWhitespaceNoNewLineBlock, end)
 	return Set(list, single, empty)
 }
 
 func MultiLineCodeBlock(start Expression, listItem Expression, delimiter Expression, end Expression) Expression {
 	list := BoundedMultiLineRepeatingList(start, listItem, delimiter, end)
 	single := Sequence(start, optionalWhitespaceBlock, listItem, optionalWhitespaceBlock, end)
-	empty  := Sequence(start, optionalWhitespaceBlock, end)
+	empty := Sequence(start, optionalWhitespaceBlock, end)
 	return Set(list, single, empty)
 }
-
 
 func FunctionParameterList(start Expression, listItem Expression, delimiter Expression, end Expression) Expression {
 	return Sequence(start, optionalWhitespaceBlock, MultiLineRepeatingList(listItem, delimiter), optionalWhitespaceNoNewLineBlock, end)
@@ -96,7 +89,6 @@ func FunctionParameterList(start Expression, listItem Expression, delimiter Expr
 func FunctionParameterCodeBlock(start Expression, listItem Expression, delimiter Expression, end Expression) Expression {
 	list := FunctionParameterList(start, listItem, delimiter, end)
 	single := Sequence(start, optionalWhitespaceBlock, listItem, optionalWhitespaceBlock, end)
-	empty  := Sequence(start, optionalWhitespaceBlock, end)
+	empty := Sequence(start, optionalWhitespaceBlock, end)
 	return Set(list, single, empty)
 }
-
