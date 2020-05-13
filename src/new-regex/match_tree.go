@@ -88,7 +88,17 @@ class %s {
 	DebugLine: %s
 }`
 
-	definitions.WriteString(fmt.Sprintf(classDef, name, mt.IsValid, mt.Value, mt.Type, mt.Label, mt.DebugLine))
+	smallLeftParenthesis := "﹙"
+	smallRightParenthesis := "﹚"
+	smallLeftCurlyBrace := "﹛"
+	smallRightCurlyBrace := "﹜"
+
+	formattedValue := strings.ReplaceAll(mt.Value, "(", smallLeftParenthesis)
+	formattedValue = strings.ReplaceAll(formattedValue, ")", smallRightParenthesis)
+	formattedValue = strings.ReplaceAll(formattedValue, "{", smallLeftCurlyBrace)
+	formattedValue = strings.ReplaceAll(formattedValue, "}", smallRightCurlyBrace)
+
+	definitions.WriteString(fmt.Sprintf(classDef, name, mt.IsValid, formattedValue, mt.Type, mt.Label, mt.DebugLine))
 
 	for _, child := range mt.Children {
 		toMermaidDiagramRecursive(&child, name, counter, links, definitions)

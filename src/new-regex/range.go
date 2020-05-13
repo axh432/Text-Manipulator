@@ -9,6 +9,11 @@ func Range(exp Expression, min int, max int) Expression {
 	return func(iter *Iterator) MatchTree {
 		startingIndex := iter.GetIndex()
 		matches := collectConsecutiveMatches(iter, exp)
+
+		if matches == nil {
+			return invalidMatchTree("", "Range", matches, fmt.Sprintf("Range:[%d:%d], InfiniteLoop:subexpression can capture values of 0 length which will cause Range to loop indefinitely", min, max))
+		}
+
 		count := len(matches)
 
 		if countAboveMax(count, max){
@@ -33,14 +38,18 @@ func createValue(matches []MatchTree) string {
 	return sb.String()
 }
 
-//here we assume that any expression that fails resets the iterator. This is very important.
 func collectConsecutiveMatches(iter *Iterator, exp Expression) []MatchTree {
 	matches := []MatchTree{}
 	for iter.HasNext() {
+		startingIndex := iter.index
 		match := exp(iter)
 		if match.IsValid {
+			if len(match.Value) == 0 {
+				return nil
+			}
 			matches = append(matches, match) //I think children need to be pointers
 		}else{
+			iter.Reset(startingIndex)
 			break
 		}
 	}

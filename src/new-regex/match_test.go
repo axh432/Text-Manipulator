@@ -96,8 +96,8 @@ func Test_match(t *testing.T) {
 		//Primitives
 
 		//Java
-		result := Match("public void myFunction(int left, int right)", functionSignature)
-		println(result.toString())
+		result := Match("public void myFunction(int left)", functionSignature)
+		println(result.toMermaidDiagram())
 
 		require.True(t, Match("public void myFunction(int left, int right)", functionSignature).IsValid)
 	})
