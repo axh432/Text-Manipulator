@@ -7,12 +7,11 @@ import (
 
 //either A or AB
 func firstOrBoth(A Expression, B Expression) Expression {
-	return Set(A, Sequence(A,B))
+	return Set(A, Sequence(A, B))
 }
 
-//covers the patterns ABA, ABABA e.c.t
-func repeatingList(A Expression, B Expression) Expression {
-	return Sequence(Range(Sequence(A, B), 1, -1), A)
+func repeatingList(listItem Expression, delimiter Expression) Expression {
+	return Sequence(Range(Sequence(listItem, delimiter), 1, -1), listItem)
 }
 
 func blockOf(A Expression) Expression {
