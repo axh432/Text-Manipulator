@@ -22,16 +22,21 @@ func Test_parse_go(t *testing.T) {
 		require.True(t, Match("func copy(int left, int right) (dave int, sedric int)", functionSignature).IsValid)
 	})
 
-	t.Run("lists", func(t *testing.T) {
+	t.Run("strings", func(t *testing.T) {
+		result := Match(`"fmt \" line\""`, String)
+		require.True(t, result.IsValid)
 
-		/*functionParametersList  := Sequence(openBracket, optionalWhitespaceNoNewLineBlock, parameterList, optionalWhitespaceNoNewLineBlock, closedBracket)
+	})
 
-		result := Match("(int left, int right, float up)", functionParametersList)
+	t.Run("import", func(t *testing.T) {
+		require.True(t, Match(`import "fmt"`, importDeclaration).IsValid)
+		require.True(t, Match(`import ("fmt")`, importDeclaration).IsValid)
+		require.True(t, Match("import (\"fmt\"\n\"strings\")", importDeclaration).IsValid)
 
-		fmt.Println(result.toMermaidDiagram())
+	})
 
-		require.True(t, result.IsValid)*/
-
+	t.Run("package", func(t *testing.T) {
+		require.True(t, Match(`package somepackage`, packageDeclaration).IsValid)
 	})
 }
 

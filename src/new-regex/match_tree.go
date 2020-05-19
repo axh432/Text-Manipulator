@@ -2,6 +2,7 @@ package new_regex
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -17,12 +18,13 @@ type MatchTree struct {
 type MatchTreeVisitor func(mt *MatchTree)
 
 type TypeCounter struct {
-	setOfCharsCount int
-	seqOfCharsCount int
-	sequenceCount   int
-	setCount        int
-	rangeCount      int
-	labelCount      int
+	setOfCharsCount    int
+	setOfNotCharsCount int
+	seqOfCharsCount    int
+	sequenceCount      int
+	setCount           int
+	rangeCount         int
+	labelCount         int
 }
 
 func (mt *MatchTree) acceptVisitor(visit MatchTreeVisitor) {
@@ -73,6 +75,9 @@ func toMermaidDiagramRecursive(mt *MatchTree, parentName string, counter *TypeCo
 		name = fmt.Sprintf("%s_%d", mt.Type, counter.labelCount)
 		counter.labelCount++
 		break
+	case "SetOfNotCharacters":
+		name = fmt.Sprintf("%s_%d", mt.Type, counter.setOfNotCharsCount)
+		counter.setOfNotCharsCount++
 	}
 
 	if parentName != "" {
@@ -82,7 +87,7 @@ func toMermaidDiagramRecursive(mt *MatchTree, parentName string, counter *TypeCo
 	classDef := `
 class %s {
 	IsValid: %t
-	Value: "%s"
+	Value: %s
 	Type: %s
 	Label: %s
 	DebugLine: %s
@@ -92,8 +97,11 @@ class %s {
 	smallRightParenthesis := "﹚"
 	smallLeftCurlyBrace := "﹛"
 	smallRightCurlyBrace := "﹜"
+	quotationMark := "“"
 
-	formattedValue := strings.ReplaceAll(mt.Value, "(", smallLeftParenthesis)
+	formattedValue := strings.ReplaceAll(mt.Value, "\"", quotationMark)
+	formattedValue = strconv.Quote(formattedValue)
+	formattedValue = strings.ReplaceAll(formattedValue, "(", smallLeftParenthesis)
 	formattedValue = strings.ReplaceAll(formattedValue, ")", smallRightParenthesis)
 	formattedValue = strings.ReplaceAll(formattedValue, "{", smallLeftCurlyBrace)
 	formattedValue = strings.ReplaceAll(formattedValue, "}", smallRightCurlyBrace)

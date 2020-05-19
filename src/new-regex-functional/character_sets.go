@@ -11,3 +11,6 @@ var (
 	Punct = unicode.IsPunct
 	Sym   = unicode.IsSymbol
 )
+
+
+
