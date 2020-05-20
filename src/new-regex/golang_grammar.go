@@ -1,12 +1,12 @@
 package new_regex
 
 import (
-	"errors"
 	_ "fmt"
 	_ "strings"
 )
 
 var (
+
 	//Primitives
 	whitespaceBlock                  = Range(Whitespace, 1, -1)
 	optionalWhitespaceBlock          = Range(Whitespace, 0, -1)
@@ -20,6 +20,8 @@ var (
 	openBracket                      = SetOfCharacters("(")
 	closedBracket                    = SetOfCharacters(")")
 	quote                            = SetOfCharacters(`"`)
+	dot                              = SetOfCharacters(".")
+	word                             = Range(Letter, 1, -1)
 	String                           = Sequence(quote, Range(Set(SetOfNotCharacters(`"`), SequenceOfCharacters(`\"`)), 1, -1), quote)
 
 	//name
@@ -64,73 +66,31 @@ var (
 	functionSignature = Sequence(Func, whitespaceNoNewLineBlock, functionName, optionalWhitespaceNoNewLineBlock, functionParameters, optionalWhitespaceNoNewLineBlock, optionalReturnParameters)
 )
 
-func interlaceWhitespace(tokens []Expression, whitespace []Expression) (Expression, error) {
 
-	tokenLen := len(tokens)
-	whitespaceLen := len(whitespace)
-	sequenceToBe := []Expression{}
 
-	if tokenLen == 0 || whitespaceLen == 0 {
-		return nil, errors.New("one or both of the slices provided has a length of 0")
-	} else if whitespaceLen == tokenLen {
-		for i, _ := range tokens {
-			sequenceToBe = append(append(sequenceToBe, tokens[i]), whitespace[i])
+type WhitespacePattern func (expressions ...Expression) Expression
+
+func whitespacePattern(whitespace ...Expression) WhitespacePattern {
+	return func (expressions ...Expression) Expression {
+		sequenceToBe := []Expression{}
+		if len(whitespace) != len(expressions)-1 {
+			return nil
 		}
-	} else if whitespaceLen-1 == tokenLen {
-		for i := 0; i < tokenLen-1; i++ {
-			sequenceToBe = append(append(sequenceToBe, tokens[i]), whitespace[i])
+		for i := 0; i < len(whitespace); i++ {
+			sequenceToBe = append(append(sequenceToBe, expressions[i]), whitespace[i])
 		}
-		sequenceToBe = append(sequenceToBe, tokens[tokenLen-1])
-	} else {
-		return nil, errors.New("whitespace slice has to be either equal or one less than the token slice")
+		sequenceToBe = append(sequenceToBe, expressions[len(expressions)-1])
+		return Sequence(sequenceToBe...)
 	}
-
-	return Sequence(sequenceToBe...), nil
-}
-
-func listDelimiterStartAndEnd(start Expression, listItem Expression, delimiter Expression, end Expression, whitespace []Expression) Expression{
-	itemAndDelimiter := Sequence(listItem, whitespace[1], delimiter)
-	list := Sequence(Range(Sequence(itemAndDelimiter, whitespace[2]), 1, -1), listItem)
-	multiple := Sequence(start, whitespace[0], list, whitespace[3], end)
-	single := Sequence(start, whitespace[0], listItem, whitespace[3], end)
-	empty := Sequence(start, whitespace[3], end)
-	return Set(single, multiple, empty)
-}
-
-//Todo: with whitespace, with delimiter, with start and end expression, with single and with empty
-func interlaceWhitespaceList(listItem Expression, delimiter Expression, whitespace []Expression) Expression {
-	itemAndDelimiter := createItemAndDelimiter(listItem, delimiter, whitespace)
-	return createList(itemAndDelimiter, listItem, whitespace)
-}
-
-func createItemAndDelimiter(listItem Expression, delimiter Expression, whitespace []Expression) Expression {
-	if whitespace == nil || len(whitespace) == 0 {
-		if delimiter == nil {
-			return listItem
-		}
-		return Sequence(listItem, delimiter)
-	}
-
-	if delimiter == nil {
-		return Sequence(listItem, whitespace[0])
-	}
-
-	return Sequence(listItem, whitespace[0], delimiter)
-}
-
-func createList(listItemAndDelimiter Expression, listItem Expression, whitespace []Expression) Expression {
-	if whitespace == nil || len(whitespace) == 0 {
-		return Sequence(Range(listItemAndDelimiter, 1, -1), listItem)
-	}else if whitespace == nil || len(whitespace) == 1 {
-		return Sequence(Range(Sequence(listItemAndDelimiter, whitespace[0]), 1, -1), listItem)
-	}
-	return Sequence(Range(Sequence(listItemAndDelimiter, whitespace[1]), 1, -1), listItem)
 }
 
 
-/*func RepeatingList(listItem Expression, delimiter Expression) Expression {
-	return Sequence(Range(Sequence(listItem, delimiter), 1, -1), listItem)
-}*/
+
+//Todo: this.
+//Todo: padding = delimiter and whitespace
+func RepeatingList(listItem Expression, padding Expression) Expression {
+	return Sequence(Range(Sequence(listItem, padding), 1, -1), listItem)
+}
 
 func SingleLineRepeatingList(listItem Expression, delimiter Expression) Expression {
 	return Sequence(Range(Sequence(listItem, optionalWhitespaceNoNewLineBlock, delimiter, optionalWhitespaceNoNewLineBlock), 1, -1), optionalWhitespaceNoNewLineBlock, listItem)
