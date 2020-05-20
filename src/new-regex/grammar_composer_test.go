@@ -48,7 +48,7 @@ func TestGrammarComposer(t *testing.T) {
 
 }
 
-func Test_grammarIntersect(t *testing.T) {
+/*func Test_grammarIntersect(t *testing.T) {
 
 	t.Run("intersect grammar", func(t *testing.T) {
 		grammar1 := "a,b,c,d,a,b,c,d,e,f,a,b,a,b,c,d"
@@ -56,7 +56,7 @@ func Test_grammarIntersect(t *testing.T) {
 
 	})
 
-}
+}*/
 
 
 func Test_grammarDeduplicate(t *testing.T) {
