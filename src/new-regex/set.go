@@ -12,11 +12,14 @@ func Set(expressions ...Expression) Expression {
 
 		startingIndex := iter.GetIndex()
 		validMatches := []MatchTree{}
+		invalidMatches := []MatchTree{}
 
 		for _, exp := range expressions {
 			match := exp(iter)
 			if match.IsValid {
 				validMatches = append(validMatches, match)
+			}else{
+				invalidMatches = append(invalidMatches, match)
 			}
 			iter.Reset(startingIndex)
 		}
@@ -31,6 +34,7 @@ func Set(expressions ...Expression) Expression {
 		}
 
 		iter.Reset(startingIndex)
-		return invalidMatchTree("", "Set", nil, "Set:[], NoMatch:string does not match the given subexpressions")
+		return invalidMatchTree("", "Set", invalidMatches, "Set:[], NoMatch:string does not match the given subexpressions")
 	}
 }
+

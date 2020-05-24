@@ -63,7 +63,7 @@ func TestSequence(t *testing.T) {
 		matchResult := MatchIter(&iter, exp)
 		expected := MatchTree{
 			IsValid:   false,
-			Value:     "",
+			Value:     "ab",
 			Type:      "Sequence",
 			Label:     "",
 			Children:  []MatchTree{
@@ -89,7 +89,7 @@ func TestSequence(t *testing.T) {
 		matchResult := MatchIter(&iter, exp)
 		expected := MatchTree{
 			IsValid:   false,
-			Value:     "",
+			Value:     "a",
 			Type:      "Sequence",
 			Label:     "",
 			Children:  []MatchTree{
@@ -136,7 +136,7 @@ func TestSequence(t *testing.T) {
 		matchResult := MatchIter(&iter, exp)
 		expected := MatchTree{
 			IsValid:   false,
-			Value:     "",
+			Value:     "ab",
 			Type:      "Sequence",
 			Label:     "",
 			Children:  []MatchTree{

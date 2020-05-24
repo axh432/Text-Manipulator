@@ -15,13 +15,13 @@ func SequenceOfCharacters(sequence string) Expression {
 		for _, char := range sequence {
 			if !iter.HasNext() {
 				iter.Reset(startingIndex)
-				return invalidMatchTree("", "SequenceOfCharacters", nil, "SequenceOfCharacters:["+sequence+"], NoMatch:reached end of string before finished")
+				return invalidMatchTree(sb.String(), "SequenceOfCharacters", nil, "SequenceOfCharacters:["+sequence+"], NoMatch:reached end of string before finished")
 			}
 
 			nextRune := iter.Next()
 			if char != nextRune {
 				iter.Reset(startingIndex)
-				return invalidMatchTree("", "SequenceOfCharacters", nil, "SequenceOfCharacters:["+sequence+"], NoMatch: '"+sb.String()+string(nextRune)+"' does not match the sequence")
+				return invalidMatchTree(sb.String(), "SequenceOfCharacters", nil, "SequenceOfCharacters:["+sequence+"], NoMatch: '"+sb.String()+string(nextRune)+"' does not match the sequence")
 			}
 			sb.WriteRune(char)
 		}

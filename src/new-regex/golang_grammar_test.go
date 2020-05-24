@@ -1,7 +1,9 @@
 package new_regex
 
 import (
+	"fmt"
 	"github.com/stretchr/testify/require"
+	"io/ioutil"
 	"testing"
 )
 
@@ -44,6 +46,11 @@ func Test_parse_go(t *testing.T) {
 		require.True(t, Match(`var d = true"`, varAssignStatement).IsValid)
 		require.True(t, Match(`var b int = 1`, varAssignStatement).IsValid)
 		require.True(t, Match(`var b, c int = 1, 2"`, varAssignStatement).IsValid)
+		require.True(t, Match(`var b = strconv.toInt("12")`, varAssignStatement).IsValid)
+	})
+
+	t.Run("var declaration statement", func(t *testing.T){
+		require.True(t, Match(`var e int`, varStatement).IsValid)
 	})
 
 	t.Run("assign statement", func(t *testing.T){
@@ -54,6 +61,52 @@ func Test_parse_go(t *testing.T) {
 		require.True(t, Match(`Println(a)`, functionCall).IsValid)
 		require.True(t, Match(`fmt.Println(a)`, functionCall).IsValid)
 		require.True(t, Match(`fmt.Println(b, c)`, functionCall).IsValid)
+		require.True(t, Match(`fmt.Println(fmt.Sprintf("hello %d", d), c)`, functionCall).IsValid)
+	})
+
+	t.Run("function body", func(t *testing.T){
+		require.True(t, Match("{ \tvar b, c int = 1, 2\n\tfmt.Println(b, c) }", functionBody).IsValid)
+		require.True(t, Match("{ \tfmt.Println(b, c) }", functionBody).IsValid)
+
+		require.True(t, Match("{\n}", functionBody).IsValid)
+		require.True(t, Match("{}", functionBody).IsValid)
+		require.True(t, Match("{\t}", functionBody).IsValid)
+
+		require.True(t, Match("{\n\n\t}", functionBody).IsValid)
+		require.True(t, Match("{\n\n\tvar a = \"initial\"\n\t}", functionBody).IsValid)
+
+		fmt.Println(Match("{\n\n\tvar a = \"initial\"\n\tfmt.Println(a)\t\n}", functionBody).toMermaidDiagram())
+
+		require.True(t, Match("{\n\n\tvar a = \"initial\"\n\tfmt.Println(a)\t\n}", functionBody).IsValid)
+
+		require.True(t, Match("{\n\n\tvar a = \"initial\"\n\tfmt.Println(a)\n\n\tvar b, c int = 1, 2}", functionBody).IsValid)
+		require.True(t, Match("{\n\n\tvar a = \"initial\"\n\tfmt.Println(a)\n\n\tvar b, c int = 1, 2\n\tfmt.Println(b, c)}", functionBody).IsValid)
+		require.True(t, Match("{\n\n\tvar a = \"initial\"\n\tfmt.Println(a)\n\n\tvar b, c int = 1, 2\n\tfmt.Println(b, c)\n\n\tvar d = true}", functionBody).IsValid)
+		require.True(t, Match("{\n\n\tvar a = \"initial\"\n\tfmt.Println(a)\n\n\tvar b, c int = 1, 2\n\tfmt.Println(b, c)\n\n\tvar d = true\n\tfmt.Println(d)}", functionBody).IsValid)
+		require.True(t, Match("{\n\n\tvar a = \"initial\"\n\tfmt.Println(a)\n\n\tvar b, c int = 1, 2\n\tfmt.Println(b, c)\n\n\tvar d = true\n\tfmt.Println(d)\n\n\tvar e int}", functionBody).IsValid)
+		require.True(t, Match("{\n\n\tvar a = \"initial\"\n\tfmt.Println(a)\n\n\tvar b, c int = 1, 2\n\tfmt.Println(b, c)\n\n\tvar d = true\n\tfmt.Println(d)\n\n\tvar e int\n\tfmt.Println(e)}", functionBody).IsValid)
+		require.True(t, Match("{\n\n\tvar a = \"initial\"\n\tfmt.Println(a)\n\n\tvar b, c int = 1, 2\n\tfmt.Println(b, c)\n\n\tvar d = true\n\tfmt.Println(d)\n\n\tvar e int\n\tfmt.Println(e)\n\n\tf := \"apple\"}", functionBody).IsValid)
+		require.True(t, Match("{\n\n\tvar a = \"initial\"\n\tfmt.Println(a)\n\n\tvar b, c int = 1, 2\n\tfmt.Println(b, c)\n\n\tvar d = true\n\tfmt.Println(d)\n\n\tvar e int\n\tfmt.Println(e)\n\n\tf := \"apple\"\n\tfmt.Println(f)\n}", functionBody).IsValid)
+	})
+
+	t.Run("function", func(t *testing.T){
+
+		tree := Match("func special() {\n\tvar a = \"initial\"\n}", functionDeclaration)
+
+		fmt.Println(tree.toMermaidDiagram())
+
+		require.True(t, Match("func special() {\n\tvar a = \"initial\"\n}", functionDeclaration).IsValid)
+	})
+
+	t.Run("basic go example", func(t *testing.T){
+		fileAsBytes, err := ioutil.ReadFile("./basic_go_example.go")
+		require.NoError(t, err)
+
+		tree := Match(string(fileAsBytes), basicGo)
+
+		fmt.Println(tree.toMermaidDiagram())
+
+		require.True(t, Match(string(fileAsBytes), basicGo).IsValid)
 	})
 }
 

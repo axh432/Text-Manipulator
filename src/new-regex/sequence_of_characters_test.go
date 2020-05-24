@@ -47,7 +47,7 @@ func TestSequenceOfCharacters(t *testing.T) {
 		matchResult := MatchIter(&iter, exp)
 		expected := MatchTree{
 			IsValid:   false,
-			Value:     "",
+			Value:     "a",
 			Type:	   "SequenceOfCharacters",
 			Label:     "",
 			Children:  nil,
@@ -64,7 +64,7 @@ func TestSequenceOfCharacters(t *testing.T) {
 		matchResult := MatchIter(&iter, exp)
 		expected := MatchTree{
 			IsValid:   false,
-			Value:     "",
+			Value:     "a",
 			Type:	   "SequenceOfCharacters",
 			Label:     "",
 			Children:  nil,
@@ -98,7 +98,7 @@ func TestSequenceOfCharacters(t *testing.T) {
 		matchResult := MatchIter(&iter, exp)
 		expected := MatchTree{
 			IsValid:   false,
-			Value:     "",
+			Value:     "ab",
 			Type:	   "SequenceOfCharacters",
 			Label:     "",
 			Children:  nil,

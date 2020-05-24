@@ -44,6 +44,7 @@ func collectConsecutiveMatches(iter *Iterator, exp Expression) []MatchTree {
 		startingIndex := iter.index
 		match := exp(iter)
 		if match.IsValid {
+			//Todo: this needs tidying
 			if len(match.Value) == 0 {
 				return nil
 			}

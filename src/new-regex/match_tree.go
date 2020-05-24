@@ -93,24 +93,27 @@ class %s {
 	DebugLine: %s
 }`
 
+	definitions.WriteString(fmt.Sprintf(classDef, name, mt.IsValid, strconv.Quote(replaceMermaidSensitiveCharacters(mt.Value)), mt.Type, mt.Label, replaceMermaidSensitiveCharacters(mt.DebugLine)))
+
+	for _, child := range mt.Children {
+		toMermaidDiagramRecursive(&child, name, counter, links, definitions)
+	}
+}
+
+func replaceMermaidSensitiveCharacters(str string) string {
 	smallLeftParenthesis := "﹙"
 	smallRightParenthesis := "﹚"
 	smallLeftCurlyBrace := "﹛"
 	smallRightCurlyBrace := "﹜"
 	quotationMark := "“"
 
-	formattedValue := strings.ReplaceAll(mt.Value, "\"", quotationMark)
-	formattedValue = strconv.Quote(formattedValue)
-	formattedValue = strings.ReplaceAll(formattedValue, "(", smallLeftParenthesis)
-	formattedValue = strings.ReplaceAll(formattedValue, ")", smallRightParenthesis)
-	formattedValue = strings.ReplaceAll(formattedValue, "{", smallLeftCurlyBrace)
-	formattedValue = strings.ReplaceAll(formattedValue, "}", smallRightCurlyBrace)
+	str = strings.ReplaceAll(str, "\"", quotationMark)
+	str = strings.ReplaceAll(str, "(", smallLeftParenthesis)
+	str = strings.ReplaceAll(str, ")", smallRightParenthesis)
+	str = strings.ReplaceAll(str, "{", smallLeftCurlyBrace)
+	str = strings.ReplaceAll(str, "}", smallRightCurlyBrace)
 
-	definitions.WriteString(fmt.Sprintf(classDef, name, mt.IsValid, formattedValue, mt.Type, mt.Label, mt.DebugLine))
-
-	for _, child := range mt.Children {
-		toMermaidDiagramRecursive(&child, name, counter, links, definitions)
-	}
+	return str
 }
 
 func (mt *MatchTree) toString() string {

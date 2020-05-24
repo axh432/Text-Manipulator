@@ -64,10 +64,10 @@ func getRangeOfDigits(from rune, to rune) string {
 		return ""
 	}
 
-	alphabet := "0123456789"
-	start := strings.IndexRune(alphabet, from)
-	end   := strings.IndexRune(alphabet, to)
-	return alphabet[start:end+1]
+	digits := "0123456789"
+	start := strings.IndexRune(digits, from)
+	end   := strings.IndexRune(digits, to)
+	return digits[start:end+1]
 }
 
 func getRangeOfLettersUpper(from rune, to rune) string {

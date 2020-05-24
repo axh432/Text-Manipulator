@@ -27,7 +27,7 @@ func Sequence(expressions ...Expression) Expression {
 				if match.Label != "" {
 					 debugLine = fmt.Sprintf("Sequence:[], NoMatch:string does not match given subexpression: %s", match.Label)
 				}
-				return invalidMatchTree("", "Sequence", matches, debugLine)
+				return invalidMatchTree(sb.String(), "Sequence", matches, debugLine)
 			}
 		}
 
