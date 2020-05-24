@@ -1,7 +1,6 @@
 package new_regex
 
 import (
-	"fmt"
 	"github.com/stretchr/testify/require"
 	"testing"
 )
@@ -74,18 +73,17 @@ func TestRegexOne(t *testing.T) {
 
 	})
 
-	//Todo: Do we need a 'not' expression? When would you need it?
-	//Todo: the main problem with it is that I dont know if the iterator is supposed to move on or not.
-	//Todo: maybe 'not' can only exist for sets of characters?
 	t.Run("Lesson 4: Excluding specific characters", func(t *testing.T) {
-		/*
-			Match	can
-			Match	man
-			Match	fan
-			Skip	dan
-			Skip	ran
-			Skip	pan
-		*/
+		cmf := SetOfNotCharacters("drp")
+		an := SequenceOfCharacters("an")
+		exp := Sequence(cmf, an)
+
+		require.True(t, Match("can", exp).IsValid)
+		require.True(t, Match("man", exp).IsValid)
+		require.True(t, Match("fan", exp).IsValid)
+		require.False(t, Match("dan", exp).IsValid)
+		require.False(t, Match("ran", exp).IsValid)
+		require.False(t, Match("pan", exp).IsValid)
 	})
 
 	//lesson 5 character ranges are not supported atm
@@ -94,7 +92,6 @@ func TestRegexOne(t *testing.T) {
 	t.Run("Lesson 5: Character ranges", func(t *testing.T) {
 		//lettersUpper := getSelectionOfLettersUpper()
 		//digits := getSelectionOfDigits()
-
 
 		/*
 			Match	Ana
@@ -278,8 +275,6 @@ func TestRegexOne(t *testing.T) {
 		fullStop := Label(SequenceOfCharacters("."), "fullstop")
 		expletive := Label(SequenceOfCharacters("&$#*@!"), "expletive")
 		sentence := Sequence(Range(Set(word, space, integer, percentage, expletive), 1, -1), fullStop)
-
-		fmt.Println(Match("The quick brown fox jumps over the lazy dog.", sentence).toMermaidDiagram())
 
 		require.True(t, Match("The quick brown fox jumps over the lazy dog.", sentence).IsValid)
 		require.True(t, Match("There were 614 instances of students getting 90.0% or above.", sentence).IsValid)
