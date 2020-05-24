@@ -25,6 +25,8 @@ type TypeCounter struct {
 	setCount           int
 	rangeCount         int
 	labelCount         int
+	stringStartCount   int
+	stringEndCount     int
 }
 
 func (mt *MatchTree) acceptVisitor(visit MatchTreeVisitor) {
@@ -78,6 +80,12 @@ func toMermaidDiagramRecursive(mt *MatchTree, parentName string, counter *TypeCo
 	case "SetOfNotCharacters":
 		name = fmt.Sprintf("%s_%d", mt.Type, counter.setOfNotCharsCount)
 		counter.setOfNotCharsCount++
+	case "StringStart":
+		name = fmt.Sprintf("%s_%d", mt.Type, counter.stringStartCount)
+		counter.stringStartCount++
+	case "StringEnd":
+		name = fmt.Sprintf("%s_%d", mt.Type, counter.stringEndCount)
+		counter.stringEndCount++
 	}
 
 	if parentName != "" {
