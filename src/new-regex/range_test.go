@@ -43,7 +43,7 @@ func TestRange(t *testing.T) {
 
 	t.Run("when given a string that is greater than a range return false set", func(t *testing.T) {
 		set := SetOfCharacters("a")
-		greaterThanRange(t, set,"SetOfCharacters")
+		greaterThanRange(t, set, "SetOfCharacters")
 	})
 
 	t.Run("when given a string that is less than a range return false sequence", func(t *testing.T) {
@@ -85,9 +85,32 @@ func TestRange(t *testing.T) {
 		set := SetOfCharacters("a")
 		maxIsInfinity(t, set, "SetOfCharacters")
 	})
+
+	t.Run("infinite loop", func(t *testing.T) {
+		subExp := Range(SetOfCharacters("a"), 0, -1)
+
+		iter := CreateIterator("xxxxx")
+
+		exp := Range(subExp, 1, -1)
+
+		expected := MatchTree{
+			IsValid: false,
+			Value: "",
+			Type: "Range",
+			Label: "",
+			Children: []MatchTree(nil),
+			DebugLine: "Range:[1:-1], InfiniteLoop:subexpression can capture values of 0 length which will cause Range to loop indefinitely",
+		}
+
+		matchResult := MatchIter(&iter, exp)
+
+		require.Equal(t, expected, matchResult)
+		require.Equal(t, 0, iter.index)
+
+	})
 }
 
-func exactlyOne(t *testing.T, subExp Expression, Type string){
+func exactlyOne(t *testing.T, subExp Expression, Type string) {
 	iter := CreateIterator("a")
 
 	exp := Range(subExp, 1, 1)
@@ -95,7 +118,7 @@ func exactlyOne(t *testing.T, subExp Expression, Type string){
 	expected := MatchTree{
 		IsValid:   true,
 		Value:     "a",
-		Type:	   "Range",
+		Type:      "Range",
 		Label:     "",
 		Children:  []MatchTree{{IsValid: true, Type: Type, Value: "a"}},
 		DebugLine: "",
@@ -104,7 +127,7 @@ func exactlyOne(t *testing.T, subExp Expression, Type string){
 	require.Equal(t, 1, iter.index)
 }
 
-func exactlyTwo(t *testing.T, subExp Expression, Type string){
+func exactlyTwo(t *testing.T, subExp Expression, Type string) {
 	iter := CreateIterator("aa")
 
 	exp := Range(subExp, 2, 2)
@@ -112,16 +135,16 @@ func exactlyTwo(t *testing.T, subExp Expression, Type string){
 	expected := MatchTree{
 		IsValid:   true,
 		Value:     "aa",
-		Type:	   "Range",
+		Type:      "Range",
 		Label:     "",
-		Children:  []MatchTree{{IsValid: true, Type: Type,  Value: "a"}, {IsValid: true, Type: Type,  Value: "a"}},
+		Children:  []MatchTree{{IsValid: true, Type: Type, Value: "a"}, {IsValid: true, Type: Type, Value: "a"}},
 		DebugLine: "",
 	}
 	require.Equal(t, expected, matchResult)
 	require.Equal(t, 2, iter.index)
 }
 
-func withinRange(t *testing.T, subExp Expression, Type string){
+func withinRange(t *testing.T, subExp Expression, Type string) {
 	iter := CreateIterator("aaa")
 
 	exp := Range(subExp, 2, 5)
@@ -129,16 +152,16 @@ func withinRange(t *testing.T, subExp Expression, Type string){
 	expected := MatchTree{
 		IsValid:   true,
 		Value:     "aaa",
-		Type:	   "Range",
+		Type:      "Range",
 		Label:     "",
-		Children:  []MatchTree{{IsValid: true, Type: Type,  Value: "a"}, {IsValid: true, Type: Type,  Value: "a"}, {IsValid: true, Type: Type, Value: "a"}},
+		Children:  []MatchTree{{IsValid: true, Type: Type, Value: "a"}, {IsValid: true, Type: Type, Value: "a"}, {IsValid: true, Type: Type, Value: "a"}},
 		DebugLine: "",
 	}
 	require.Equal(t, expected, matchResult)
 	require.Equal(t, 3, iter.index)
 }
 
-func greaterThanRange(t *testing.T, subExp Expression, Type string){
+func greaterThanRange(t *testing.T, subExp Expression, Type string) {
 	iter := CreateIterator("aa")
 
 	exp := Range(subExp, 1, 1)
@@ -147,16 +170,16 @@ func greaterThanRange(t *testing.T, subExp Expression, Type string){
 	expected := MatchTree{
 		IsValid:   false,
 		Value:     "",
-		Type:	   "Range",
+		Type:      "Range",
 		Label:     "",
-		Children:  []MatchTree{{IsValid: true, Type: Type,  Value: "a"},{IsValid: true, Type: Type,  Value: "a"}},
+		Children:  []MatchTree{{IsValid: true, Type: Type, Value: "a"}, {IsValid: true, Type: Type, Value: "a"}},
 		DebugLine: "Range:[1:1], NoMatch:number of subexpressions greater than max",
 	}
 	require.Equal(t, expected, matchResult)
 	require.Equal(t, 0, iter.index)
 }
 
-func lessThanRange(t *testing.T, subExp Expression, Type string){
+func lessThanRange(t *testing.T, subExp Expression, Type string) {
 	iter := CreateIterator("a")
 
 	exp := Range(subExp, 2, 3)
@@ -165,9 +188,9 @@ func lessThanRange(t *testing.T, subExp Expression, Type string){
 	expected := MatchTree{
 		IsValid:   false,
 		Value:     "",
-		Type:	   "Range",
+		Type:      "Range",
 		Label:     "",
-		Children:  []MatchTree{{IsValid: true, Type: Type,  Value: "a"}},
+		Children:  []MatchTree{{IsValid: true, Type: Type, Value: "a"}},
 		DebugLine: "Range:[2:3], NoMatch:number of subexpressions less than min",
 	}
 	require.Equal(t, expected, matchResult)
@@ -183,7 +206,7 @@ func emptyStringMinOfOne(t *testing.T, subExp Expression, Type string) {
 	expected := MatchTree{
 		IsValid:   false,
 		Value:     "",
-		Type:	   "Range",
+		Type:      "Range",
 		Label:     "",
 		Children:  []MatchTree{},
 		DebugLine: "Range:[1:2], NoMatch:number of subexpressions less than min",
@@ -201,7 +224,7 @@ func zeroMinimum(t *testing.T, subExp Expression, Type string) {
 	expected := MatchTree{
 		IsValid:   true,
 		Value:     "",
-		Type:	   "Range",
+		Type:      "Range",
 		Label:     "",
 		Children:  []MatchTree{},
 		DebugLine: "",
@@ -218,9 +241,9 @@ func maxIsInfinity(t *testing.T, subExp Expression, Type string) {
 	expected := MatchTree{
 		IsValid:   true,
 		Value:     "aaaaa",
-		Type:	   "Range",
+		Type:      "Range",
 		Label:     "",
-		Children:  []MatchTree{{IsValid: true, Type: Type,  Value: "a"}, {IsValid: true, Type: Type,  Value: "a"}, {IsValid: true, Type: Type,  Value: "a"}, {IsValid: true, Type: Type, Value: "a"}, {IsValid: true, Type: Type, Value: "a"}},
+		Children:  []MatchTree{{IsValid: true, Type: Type, Value: "a"}, {IsValid: true, Type: Type, Value: "a"}, {IsValid: true, Type: Type, Value: "a"}, {IsValid: true, Type: Type, Value: "a"}, {IsValid: true, Type: Type, Value: "a"}},
 		DebugLine: "",
 	}
 

@@ -94,7 +94,7 @@ func Test_parse_go(t *testing.T) {
 
 		tree := Match(string(fileAsBytes), basicGo)
 
-		fmt.Println(tree.toMermaidDiagram())
+		fmt.Println(tree.toGraphVizDiagram())
 
 		require.True(t, Match(string(fileAsBytes), basicGo).IsValid)
 	})

@@ -18,7 +18,6 @@ func TestRegexOne(t *testing.T) {
 	})
 
 	t.Run("Lesson 1.5: the 123s", func(t *testing.T) {
-		//write a pattern that matches only the numbers.
 
 		integer := Label(Range(Number, 1, -1), "integer")
 		notANumber := Set(Whitespace, Letter, Punctuation, Symbol)
@@ -36,8 +35,6 @@ func TestRegexOne(t *testing.T) {
 		result1 := Match("var g = 123;", exp)
 		result2 := Match(`define "123"`, exp)
 		result3 := Match(`var g = 123;`, exp)
-
-		//fmt.Println(result2.toMermaidDiagram())
 
 		result1.acceptVisitor(visitor)
 		result2.acceptVisitor(visitor)
@@ -58,8 +55,6 @@ func TestRegexOne(t *testing.T) {
 	})
 
 	t.Run("Lesson 3: Matching specific characters", func(t *testing.T) {
-		//match the specific characters: cmf at the beginning of the string
-
 		cmf := SetOfCharacters("cmf")
 		an := SequenceOfCharacters("an")
 		exp := Sequence(cmf, an)
@@ -86,21 +81,20 @@ func TestRegexOne(t *testing.T) {
 		require.False(t, Match("pan", exp).IsValid)
 	})
 
-	//lesson 5 character ranges are not supported atm
-	//Todo: do we need a special type of SetOfCharacters e.g. RangedSetOfCharacters('A', 'm'), RangedSetOfCharacters('0', '6')?
 	//Todo: in regex our 'Ranges' are called 'Repetitions' maybe we should rename them?
 	t.Run("Lesson 5: Character ranges", func(t *testing.T) {
-		//lettersUpper := getSelectionOfLettersUpper()
-		//digits := getSelectionOfDigits()
+		A_C, _ := GetSetOfLetters('A', 'C')
+		n_p, _ := GetSetOfLetters('n', 'p')
+		a_b, _ := GetSetOfLetters('a', 'c')
 
-		/*
-			Match	Ana
-			Match	Bob
-			Match	Cpc
-			Skip	aax
-			Skip	bby
-			Skip	ccz
-		*/
+		exp := Sequence(A_C, n_p, a_b)
+
+		require.True(t, Match("Ana", exp).IsValid)
+		require.True(t, Match("Bob", exp).IsValid)
+		require.True(t, Match("Cpc", exp).IsValid)
+		require.False(t, Match("aax", exp).IsValid)
+		require.False(t, Match("bby", exp).IsValid)
+		require.False(t, Match("ccz", exp).IsValid)
 	})
 
 	t.Run("Lesson 6: Catching some zzz's", func(t *testing.T) {
@@ -264,7 +258,6 @@ func TestRegexOne(t *testing.T) {
 		require.False(t, Match("I love cogs", exp).IsValid)
 	})
 
-	//Todo: it is possible to go into an infinite loop if the Range of the word is set to min=0. Errors if hits an infinite loop.
 	t.Run("Lesson 15: Other special characters", func(t *testing.T) {
 
 		word := Label(Range(Letter, 1, -1), "word")

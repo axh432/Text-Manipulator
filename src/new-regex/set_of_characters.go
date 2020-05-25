@@ -1,6 +1,7 @@
 package new_regex
 
 import (
+	"errors"
 	"strings"
 	"unicode"
 )
@@ -43,44 +44,64 @@ func SetOfNotCharacters(characters string) Expression {
 	}
 }
 
-func getRangeOfLettersLower(from rune, to rune) string {
-
-	if !unicode.IsLetter(from) || !unicode.IsLetter(to) {
-		return ""
+func GetSetOfLetters(from rune, to rune) (Expression, error) {
+	str, err := GetStringOfLetters(from, to)
+	if err != nil {
+		return nil, err
 	}
-
-	from = unicode.ToLower(from)
-	to = unicode.ToLower(to)
-
-	alphabet := "abcdefghijklmnopqrstuvwxyz"
-	start := strings.IndexRune(alphabet, from)
-	end   := strings.IndexRune(alphabet, to)
-	return alphabet[start:end+1]
+	return SetOfCharacters(str), nil
 }
 
-func getRangeOfDigits(from rune, to rune) string {
-
-	if !unicode.IsDigit(from) || !unicode.IsDigit(to) {
-		return ""
+func GetSetOfDigits(from rune, to rune) (Expression, error) {
+	str, err := GetStringOfDigits(from, to)
+	if err != nil {
+		return nil, err
 	}
-
-	digits := "0123456789"
-	start := strings.IndexRune(digits, from)
-	end   := strings.IndexRune(digits, to)
-	return digits[start:end+1]
+	return SetOfCharacters(str), nil
 }
 
-func getRangeOfLettersUpper(from rune, to rune) string {
 
-	if !unicode.IsLetter(from) || !unicode.IsLetter(to) {
-		return ""
+func GetStringOfDigits(from rune, to rune) (string, error) {
+
+	if !bothDigits(from, to) {
+		return "", errors.New("not all the runes provided were digits")
 	}
 
-	from = unicode.ToUpper(from)
-	to = unicode.ToUpper(to)
+	return getRunesFromString("0123456789", from, to), nil
+}
 
-	alphabet := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	start := strings.IndexRune(alphabet, from)
-	end   := strings.IndexRune(alphabet, to)
-	return alphabet[start:end+1]
+func GetStringOfLetters(from rune, to rune) (string, error) {
+	if !bothLetters(from, to) {
+		return "", errors.New("not all the runes provided were letters")
+	}
+	if bothUpper(from, to) {
+		return getRunesFromString("ABCDEFGHIJKLMNOPQRSTUVWXYZ", from, to), nil
+	} else if bothLower(from, to) {
+		return getRunesFromString("abcdefghijklmnopqrstuvwxyz", from, to), nil
+	}
+	uppers := getRunesFromString("ABCDEFGHIJKLMNOPQRSTUVWXYZ", unicode.ToUpper(from), unicode.ToUpper(to))
+	lowers := getRunesFromString("abcdefghijklmnopqrstuvwxyz", unicode.ToLower(from), unicode.ToLower(to))
+	return uppers + lowers, nil
+}
+
+func bothDigits(from rune, to rune) bool {
+	return unicode.IsDigit(from) || unicode.IsDigit(to)
+}
+
+func bothLetters(from rune, to rune) bool {
+	return unicode.IsLetter(from) || unicode.IsLetter(to)
+}
+
+func bothLower(from rune, to rune) bool {
+	return unicode.IsLower(from) && unicode.IsLower(to)
+}
+
+func bothUpper(from rune, to rune) bool {
+	return unicode.IsUpper(from) && unicode.IsUpper(to)
+}
+
+func getRunesFromString(str string, from rune, to rune) string {
+	start := strings.IndexRune(str, from)
+	end := strings.IndexRune(str, to)
+	return str[start : end+1]
 }
